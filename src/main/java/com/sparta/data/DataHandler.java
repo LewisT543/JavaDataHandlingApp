@@ -7,51 +7,42 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DataHandler {
-    private LinkedHashMap<Integer, String[]> rejects = new LinkedHashMap<>();
-    // why am I using hashmaps... Rework into arrays.
+    private LinkedHashMap<Integer, String[]> duplicates = new LinkedHashMap<>();
     private LinkedHashMap<Integer, Employee> employeeObjectsMap = new LinkedHashMap<>();
-    public void readAllToObjects(String filePath) {
+    public void readAllToObjects(String filePath, String choice) {
         long start = System.nanoTime();
         List<String[]> objectDefinitions = CSVAccessor.readAllToList(filePath);
         long readStop = System.nanoTime();
         System.out.println("Read time taken: " + (readStop - start) + "ns");
+
+        extractDuplicatesAndCreateEmployees(objectDefinitions);
+
+        printDuplicates(duplicates);
+        System.out.println(employeeObjectsMap.size());
+        System.out.println(duplicates.size());
+        long finalStop = System.nanoTime();
+        System.out.println("Total time taken to read: " + (finalStop - start));
+    }
+
+    public void extractDuplicatesAndCreateEmployees(List<String[]> lst) {
+        // Horrible runtime - but how do I reduce that?
         int i = 0;
-        for (String[] list : objectDefinitions) {
-            String[] datesCleaned = tryCleanDates(list);
-            if (isValidEmployeeData(datesCleaned) && !isDuplicateEntry(datesCleaned))
-                employeeObjectsMap.put(i, stringLstToEmployee(datesCleaned));
+        for (String[] arr : lst) {
+            String[] datesCleaned = tryCleanDates(arr);
+            if (isValidEmployeeData(datesCleaned) && !isDuplicateEntryByIdOrEmail(datesCleaned))
+                employeeObjectsMap.put(i, stringArrToEmployee(datesCleaned));
             else
-                rejects.put(i, list);
+                duplicates.put(i, arr);
             i++;
         }
-        System.out.println(employeeObjectsMap.size());
-        System.out.println(rejects);
     }
 
-    public boolean isDuplicateEntry2(String[] dateCleanedData) {
-        // This is awful
-        StringBuilder newEmp = new StringBuilder();
-        newEmp.append(dateCleanedData[1]).append(dateCleanedData[2]).append(dateCleanedData[3])
-                .append(dateCleanedData[4]).append(dateCleanedData[7]);
+    public boolean isDuplicateEntryByIdOrEmail(String[] dateCleanedData) {
+        // This makes the read action very slow... does this matter?
         for (Map.Entry<Integer, Employee> entry : employeeObjectsMap.entrySet()) {
-            Employee myEmp = entry.getValue();
-            StringBuilder emp = new StringBuilder().append(myEmp.getNamePrefix())
-                    .append(myEmp.getFirstName()).append(myEmp.getMiddleInitial())
-                    .append(myEmp.getLastName()).append(myEmp.getDateOfBirth().toString());
-            if (newEmp.toString().equals(emp.toString())) return true;
-        }
-        return false;
-    }
-
-    public boolean isDuplicateEntry(String[] dateCleanedData) {
-        // This is awful
-        StringBuilder newEmp = new StringBuilder();
-        newEmp.append(dateCleanedData[0]).append(dateCleanedData[6]);
-        for (Map.Entry<Integer, Employee> entry : employeeObjectsMap.entrySet()) {
-            Employee myEmp = entry.getValue();
-            StringBuilder emp = new StringBuilder().append(myEmp.getEmpID())
-                    .append(myEmp.getEmail());
-            if (newEmp.toString().equals(emp.toString())) return true;
+            if (String.valueOf(entry.getValue().getEmpID()).equals(dateCleanedData[0]) ||
+            entry.getValue().getEmail().equals(dateCleanedData[6]))
+                return true;
         }
         return false;
     }
@@ -100,7 +91,7 @@ public class DataHandler {
         return data;
     }
 
-    public Employee stringLstToEmployee(String[] params) {
+    public Employee stringArrToEmployee(String[] params) {
         int empId = Integer.parseInt(params[0]);
         String namePrefix = params[1];
         String firstName = params[2];
@@ -111,18 +102,17 @@ public class DataHandler {
         Date dateOfBirth = Date.valueOf(params[7]);
         Date dateOfJoining = Date.valueOf(params[8]);
         int salary  = Integer.parseInt(params[9]);
-
         return new Employee(empId, namePrefix, firstName, middleInitial, lastName, gender,
                 email, dateOfBirth, dateOfJoining, salary);
     }
 
-    public void printEmployees(LinkedHashMap<Integer, Employee> map) {
-        for (Map.Entry<Integer, Employee> entry : map.entrySet()) {
-            System.out.println(entry.getKey() + " -> " + entry.getValue());
+    public void printDuplicates(LinkedHashMap<Integer, String[]> map) {
+        for (Map.Entry<Integer, String[]> entry : map.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + Arrays.toString(entry.getValue()));
         }
     }
 
-    public LinkedHashMap<Integer, String[]> getRejects() {
-        return rejects;
+    public LinkedHashMap<Integer, String[]> getDuplicates() {
+        return duplicates;
     }
 }
