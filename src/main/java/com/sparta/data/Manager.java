@@ -6,12 +6,12 @@ import java.io.IOException;
 
 public class Manager {
     public static void main(String[] args) throws IOException {
-        parseEmployeeObjects("EmployeeRecordsLarge.csv", "rejects.csv");
+        parseEmployeeObjects("EmployeeRecords.csv", "rejects.csv");
     }
 
     public static void parseEmployeeObjects (String inPath, String outPath) {
         DataHandler handler = new DataHandler();
-        handler.readAllToObjects(inPath, "e");
-        CSVAccessor.writeLinesToCSV(outPath, handler.getDuplicates());
+        handler.readAllToObjects(inPath);
+        CSVAccessor.writeLinesToCSV(outPath, CSVAccessor.getDuplicates());
     }
 }

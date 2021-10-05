@@ -7,44 +7,24 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DataHandler {
-    private LinkedHashMap<Integer, String[]> duplicates = new LinkedHashMap<>();
     private LinkedHashMap<Integer, Employee> employeeObjectsMap = new LinkedHashMap<>();
-    public void readAllToObjects(String filePath, String choice) {
+    public void readAllToObjects(String filePath) {
         long start = System.nanoTime();
-        List<String[]> objectDefinitions = CSVAccessor.readAllToList(filePath);
+        List<String[]> listOfStrArr = CSVAccessor.readAllToList(filePath);
         long readStop = System.nanoTime();
-        System.out.println("Read time taken: " + (readStop - start) + "ns");
-
-        extractDuplicatesAndCreateEmployees(objectDefinitions);
-
-        printDuplicates(duplicates);
-        System.out.println(employeeObjectsMap.size());
-        System.out.println(duplicates.size());
-        long finalStop = System.nanoTime();
-        System.out.println("Total time taken to read: " + (finalStop - start));
-    }
-
-    public void extractDuplicatesAndCreateEmployees(List<String[]> lst) {
-        // Horrible runtime - but how do I reduce that?
         int i = 0;
-        for (String[] arr : lst) {
-            String[] datesCleaned = tryCleanDates(arr);
-            if (isValidEmployeeData(datesCleaned) && !isDuplicateEntryByIdOrEmail(datesCleaned))
-                employeeObjectsMap.put(i, stringArrToEmployee(datesCleaned));
-            else
-                duplicates.put(i, arr);
+        long createObjsStart = System.nanoTime();
+        for (String[] data : listOfStrArr) {
+            data = tryCleanDates(data);
+            if (isValidEmployeeData(data))
+                employeeObjectsMap.put(i, stringArrToEmployee(data));
             i++;
         }
-    }
-
-    public boolean isDuplicateEntryByIdOrEmail(String[] dateCleanedData) {
-        // This makes the read action very slow... does this matter?
-        for (Map.Entry<Integer, Employee> entry : employeeObjectsMap.entrySet()) {
-            if (String.valueOf(entry.getValue().getEmpID()).equals(dateCleanedData[0]) ||
-            entry.getValue().getEmail().equals(dateCleanedData[6]))
-                return true;
-        }
-        return false;
+        long createStop = System.nanoTime();
+        System.out.println("Size of valid object Map: " + employeeObjectsMap.entrySet().size());
+        System.out.println("Size of rejects: " + CSVAccessor.getDuplicates().size());
+        System.out.println("Total time taken to read: " + ((readStop - start) / 1000000) + "ms");
+        System.out.println("Total time taken to create objects: " + ((createStop - createObjsStart) / 1000000) + "ms");
     }
 
     public boolean isValidEmployeeData(String[] data) {
@@ -104,15 +84,5 @@ public class DataHandler {
         int salary  = Integer.parseInt(params[9]);
         return new Employee(empId, namePrefix, firstName, middleInitial, lastName, gender,
                 email, dateOfBirth, dateOfJoining, salary);
-    }
-
-    public void printDuplicates(LinkedHashMap<Integer, String[]> map) {
-        for (Map.Entry<Integer, String[]> entry : map.entrySet()) {
-            System.out.println(entry.getKey() + " -> " + Arrays.toString(entry.getValue()));
-        }
-    }
-
-    public LinkedHashMap<Integer, String[]> getDuplicates() {
-        return duplicates;
     }
 }
