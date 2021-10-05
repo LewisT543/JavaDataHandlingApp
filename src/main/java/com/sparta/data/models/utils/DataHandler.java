@@ -1,27 +1,28 @@
-package com.sparta.data;
+package com.sparta.data.models.utils;
 
 import com.sparta.data.models.Employee;
+
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DataHandler {
-    private LinkedHashMap<Integer, Employee> employeeObjectsMap = new LinkedHashMap<>();
-    public void readAllToObjects(String filePath) {
+    private ArrayList<Employee> employeesArr = new ArrayList<>();
+    public void readFromCSVToEmployees(String filePath) {
         long start = System.nanoTime();
-        List<String[]> listOfStrArr = CSVAccessor.readAllToList(filePath);
+        List<String[]> listOfStrArr = CSVAccessor.readCSVToList(filePath);
         long readStop = System.nanoTime();
         int i = 0;
         long createObjsStart = System.nanoTime();
         for (String[] data : listOfStrArr) {
             data = tryCleanDates(data);
             if (isValidEmployeeData(data))
-                employeeObjectsMap.put(i, stringArrToEmployee(data));
+                employeesArr.add(stringArrToEmployee(data));
             i++;
         }
         long createStop = System.nanoTime();
-        System.out.println("Size of valid object Map: " + employeeObjectsMap.entrySet().size());
+        System.out.println("Size of valid object Map: " + employeesArr.size());
         System.out.println("Size of rejects: " + CSVAccessor.getDuplicates().size());
         System.out.println("Total time taken to read: " + ((readStop - start) / 1000000) + "ms");
         System.out.println("Total time taken to create objects: " + ((createStop - createObjsStart) / 1000000) + "ms");
@@ -35,9 +36,9 @@ public class DataHandler {
             String namePrefix = data[1];
             if (namePrefix.length() > 5 || !namePrefix.matches("[a-zA-Z]+\\.")) validData = false;
             String firstName = data[2];
-            if (firstName.length() > 256 || !firstName.matches("\\p{L}+")) validData = false;
+            if (firstName.length() > 255 || !firstName.matches("\\p{L}+")) validData = false;
             String middleInitial = data[3];
-            if (middleInitial.length() > 3 || !middleInitial.matches("[a-zA-Z]+")) validData = false;
+            if (middleInitial.length() > 5 || !middleInitial.matches("[a-zA-Z]\\.+")) validData = false;
             String lastName = data[4];
             if (lastName.length() > 256 || !lastName.matches("\\p{L}+")) validData = false;
             String gender = data[5];

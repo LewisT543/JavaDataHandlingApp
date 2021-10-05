@@ -1,12 +1,14 @@
-package com.sparta.data;
+package com.sparta.data.models.utils;
+
+import com.sparta.data.models.Employee;
 
 import java.io.*;
 import java.util.*;
 
 public class CSVAccessor {
     private static ArrayList<String[]> duplicates = new ArrayList<>();
-    public static List<String[]> readAllToList(String filePath) {
-        List<String[]> validLines = new ArrayList<>();
+    public static List<String[]> readCSVToList(String filePath) {
+        ArrayList<String[]> validLines = new ArrayList<>();
         String line = null;
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String headerLine = reader.readLine();
@@ -27,7 +29,7 @@ public class CSVAccessor {
         return validLines;
     }
 
-    public static void writeLinesToCSV(String filePath, ArrayList<String[]> arr) {
+    public static void writeArrLstStrToCSV(String filePath, ArrayList<String[]> arr) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (String[] entry : arr) {
                 writer.write(String.join(",", entry));
@@ -37,6 +39,17 @@ public class CSVAccessor {
             System.err.println("Error Writing to csv");
         }
     }
+
+//    public static void writeLHMToCSV(String filePath, LinkedHashMap<Integer, Employee> map) {
+//        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+//            for (Map.Entry<Integer, Employee> entry : map.entrySet()) {
+//                writer.write(entry.getValue().toString());
+//                writer.newLine();
+//            }
+//        } catch (IOException e) {
+//            System.err.println("Error Writing to csv");
+//        }
+//    }
 
     public static void printDuplicates() {
         for (String[] line : duplicates) {
