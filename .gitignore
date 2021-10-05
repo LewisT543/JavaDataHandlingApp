@@ -1,3 +1,6 @@
+EmployeeRecords(copy).csv
+EmployeeRecordsLarge(copy).csv
+rejects.csv
 # Compiled class file
 *.class
 
