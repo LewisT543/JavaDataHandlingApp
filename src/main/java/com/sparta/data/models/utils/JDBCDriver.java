@@ -6,6 +6,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+// TODO: Something wrong with dates, explore different types compatible with SQLite
+// TODO: for some reason my employeeID is auto incrementing, nothing in my SQL says it should, but it is anyway
+
 public class JDBCDriver {
     private static final HashMap<String, String> SQL_QUERIES = new HashMap<>() {{
         put("sqlDropEmp", "DROP TABLE IF EXISTS employees");
@@ -19,6 +22,7 @@ public class JDBCDriver {
                 "gender_id INTEGER PRIMARY KEY,gender VARCHAR(1) NOT NULL);");
         put("sqlPopulateGenderTable", "INSERT INTO genders (gender)" +
                 "VALUES ('M'), ('F')");
+        // Try this without a NOT NULL prefix on date fields
         put("sqlCreateEmpTable", "CREATE TABLE employees (id INTEGER PRIMARY KEY NOT NULL, employeeID INTEGER, " +
                 "prefix_id INTEGER NOT NULL, f_name VARCHAR(255) NOT NULL, mid_initial VARCHAR(5)," +
                 "l_name VARCHAR(255) NOT NULL, gender_id INTEGER NOT NULL, email VARCHAR(255) NOT NULL," +
@@ -81,7 +85,6 @@ public class JDBCDriver {
                 int rowsInserted = statement.executeUpdate();
                 totalRows += rowsInserted;
                 close(statement);
-                System.out.println("Employee added.");
             }
         } catch (SQLException sqle) {
             sqle.printStackTrace();

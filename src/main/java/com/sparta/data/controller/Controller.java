@@ -25,11 +25,12 @@ public class Controller {
         String choice = DataHandlerView.getInput(CSV_CHOICES, "a file to read from.");
         String[] stats = handler.readFromCSVToEmployees(CSV_CHOICES.get(choice));
         System.out.println("------ Reading data from CSV ------");
-        if (choice.equals("s"))
+        if (choice.equals("s")) {
             DataHandlerView.displayReadResults(stats);
-        else
+        } else {
             System.out.println("------ Writing data to database - this could take some time... ------");
             writeObjsToDB(stats);
+        }
     }
 
     public void writeObjsToDB(String[] stats) {
