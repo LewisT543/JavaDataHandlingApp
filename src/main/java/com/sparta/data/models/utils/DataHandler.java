@@ -9,7 +9,7 @@ import java.util.*;
 
 public class DataHandler {
     private ArrayList<Employee> employeesArr = new ArrayList<>();
-    public void readFromCSVToEmployees(String filePath) {
+    public String[] readFromCSVToEmployees(String filePath) {
         long start = System.nanoTime();
         List<String[]> listOfStrArr = CSVAccessor.readCSVToList(filePath);
         long readStop = System.nanoTime();
@@ -22,10 +22,12 @@ public class DataHandler {
             i++;
         }
         long createStop = System.nanoTime();
-        System.out.println("Size of valid object Map: " + employeesArr.size());
-        System.out.println("Size of rejects: " + CSVAccessor.getDuplicates().size());
-        System.out.println("Total time taken to read: " + ((readStop - start) / 1000000) + "ms");
-        System.out.println("Total time taken to create objects: " + ((createStop - createObjsStart) / 1000000) + "ms");
+        String[] returnArr = new String[4];
+        returnArr[0] = String.valueOf(employeesArr.size());
+        returnArr[1] = String.valueOf(CSVAccessor.getDuplicates().size());
+        returnArr[2] = String.valueOf((readStop - start) / 1000000);
+        returnArr[3] = String.valueOf((createStop - createObjsStart) / 1000000);
+        return returnArr;
     }
 
     public boolean isValidEmployeeData(String[] data) {
@@ -38,7 +40,7 @@ public class DataHandler {
             String firstName = data[2];
             if (firstName.length() > 255 || !firstName.matches("\\p{L}+")) validData = false;
             String middleInitial = data[3];
-            if (middleInitial.length() > 5 || !middleInitial.matches("[a-zA-Z]\\.+")) validData = false;
+            if (middleInitial.length() > 5 || !middleInitial.matches("[a-zA-Z\\.]+")) validData = false;
             String lastName = data[4];
             if (lastName.length() > 256 || !lastName.matches("\\p{L}+")) validData = false;
             String gender = data[5];
@@ -53,6 +55,7 @@ public class DataHandler {
             validData = false;
             System.err.println("Invalid input");
         }
+        if (!validData) System.out.println("Invalid Data.");
         return validData;
     }
 
@@ -73,17 +76,11 @@ public class DataHandler {
     }
 
     public Employee stringArrToEmployee(String[] params) {
-        int empId = Integer.parseInt(params[0]);
-        String namePrefix = params[1];
-        String firstName = params[2];
-        String middleInitial = params[3];
-        String lastName = params[4];
-        String gender = params[5];
-        String email = params[6];
-        Date dateOfBirth = Date.valueOf(params[7]);
-        Date dateOfJoining = Date.valueOf(params[8]);
-        int salary  = Integer.parseInt(params[9]);
-        return new Employee(empId, namePrefix, firstName, middleInitial, lastName, gender,
-                email, dateOfBirth, dateOfJoining, salary);
+        return new Employee(Integer.parseInt(params[0]), params[1], params[2], params[3], params[4], params[5],
+                params[6], Date.valueOf(params[7]), Date.valueOf(params[8]), Integer.parseInt(params[9]));
+    }
+
+    public ArrayList<Employee> getEmployeesArr() {
+        return employeesArr;
     }
 }

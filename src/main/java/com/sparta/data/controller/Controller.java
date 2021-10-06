@@ -1,6 +1,7 @@
 package com.sparta.data.controller;
 
 import com.sparta.data.models.utils.DataHandler;
+import com.sparta.data.models.utils.JDBCDriver;
 import com.sparta.data.views.DataHandlerView;
 import org.apache.log4j.Logger;
 
@@ -22,8 +23,19 @@ public class Controller {
 
     public void readObjectsIn() {
         String choice = DataHandlerView.getInput(CSV_CHOICES, "a file to read from.");
-        handler.readFromCSVToEmployees(CSV_CHOICES.get(choice));
-        // Write to CSV or DB code goes here.
+        String[] stats = handler.readFromCSVToEmployees(CSV_CHOICES.get(choice));
+        System.out.println("------ Reading data from CSV ------");
+        if (choice.equals("s"))
+            DataHandlerView.displayReadResults(stats);
+        else
+            System.out.println("------ Writing data to database - this could take some time... ------");
+            writeObjsToDB(stats);
+    }
+
+    public void writeObjsToDB(String[] stats) {
+        DataHandlerView.displayInitialisationResults(JDBCDriver.initialiseDb());
+        DataHandlerView.displayReadResults(stats);
+        DataHandlerView.displayInsertResults(JDBCDriver.insertAll(handler.getEmployeesArr()));
     }
 }
 

@@ -15,14 +15,6 @@ public class DataHandlingApp {
     public static void main(String[] args) throws IOException {
         Controller controller = new Controller(new DataHandler(), errorLogger);
         PropertyConfigurator.configure("log4j.properties");
-
-//        DataHandlerView.getInput()
-        parseEmployeeObjects("EmployeeRecords.csv", "rejects.csv");
-    }
-
-    public static void parseEmployeeObjects (String inPath, String outPath) {
-        DataHandler handler = new DataHandler();
-        handler.readFromCSVToEmployees(inPath);
-        CSVAccessor.writeArrLstStrToCSV(outPath, CSVAccessor.getDuplicates());
+        controller.readObjectsIn();
     }
 }
