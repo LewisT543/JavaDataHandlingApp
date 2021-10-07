@@ -23,8 +23,8 @@ public class Controller {
 
     public void readObjectsIn() {
         String choice = DataHandlerView.getInput(CSV_CHOICES, "a file to read from.");
-        String[] stats = handler.readFromCSVToEmployees(CSV_CHOICES.get(choice));
         System.out.println("------ Reading data from CSV ------");
+        String[] stats = handler.readFromCSVToEmployees(CSV_CHOICES.get(choice));
         if (choice.equals("s")) {
             DataHandlerView.displayReadResults(stats);
         } else {
@@ -36,7 +36,7 @@ public class Controller {
     public void writeObjsToDB(String[] stats) {
         DataHandlerView.displayInitialisationResults(JDBCDriver.initialiseDb());
         DataHandlerView.displayReadResults(stats);
-        DataHandlerView.displayInsertResults(JDBCDriver.insertAll(handler.getEmployeesArr()));
+        DataHandlerView.displayInsertResults(JDBCDriver.insertAll2(handler.getEmployeesArr()));
     }
 }
 

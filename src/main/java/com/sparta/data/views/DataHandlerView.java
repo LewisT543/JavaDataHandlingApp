@@ -55,6 +55,6 @@ public class DataHandlerView {
 
     public static void displayInsertResults(String[] stats) {
         System.out.println("Number of rows written: " + stats[0]);
-        System.out.println("Total time taken to insert: " + stats[1]);
+        System.out.println("Total time taken to insert: " + stats[1] + " ms");
     }
 }

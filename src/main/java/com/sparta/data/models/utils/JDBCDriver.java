@@ -23,15 +23,15 @@ public class JDBCDriver {
         put("sqlPopulateGenderTable", "INSERT INTO genders (gender)" +
                 "VALUES ('M'), ('F')");
         // Try this without a NOT NULL prefix on date fields
-        put("sqlCreateEmpTable", "CREATE TABLE employees (id INTEGER PRIMARY KEY NOT NULL, employeeID INTEGER, " +
+        put("sqlCreateEmpTable", "CREATE TABLE employees (id INTEGER PRIMARY KEY, employeeID INTEGER, " +
                 "prefix_id INTEGER NOT NULL, f_name VARCHAR(255) NOT NULL, mid_initial VARCHAR(5)," +
                 "l_name VARCHAR(255) NOT NULL, gender_id INTEGER NOT NULL, email VARCHAR(255) NOT NULL," +
-                "date_of_birth DATE NOT NULL, date_of_joining DATE NOT NULL, salary INTEGER, " +
+                "date_of_birth DATE, date_of_joining DATE, salary INTEGER, " +
                 "FOREIGN KEY (prefix_id) REFERENCES prefixs (prefix_id), " +
                 "FOREIGN KEY (gender_id) REFERENCES genders (gender_id));");
 
-        put("sqlInsert", "INSERT INTO employees (employeeID, prefix_id, f_name, mid_initial, l_name, gender_id, " +
-                "email, date_of_birth, date_of_joining, salary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        put("sqlInsert", "INSERT INTO employees (id, employeeID, prefix_id, f_name, mid_initial, l_name, gender_id, " +
+                "email, date_of_birth, date_of_joining, salary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
     }};
     public static long initialiseDb() {
         long start = System.nanoTime();
@@ -59,30 +59,33 @@ public class JDBCDriver {
         PreparedStatement statement = null;
         long start = System.nanoTime();
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:employees.db")) {
+            int i = 1;
             for (Employee emp : employees) {
                 statement = conn.prepareStatement(SQL_QUERIES.get("sqlInsert"));
-                statement.setInt(1, emp.getEmpID());
+                statement.setInt(1, i);
+                statement.setInt(2, emp.getEmpID());
                 switch (emp.getNamePrefix()) {
-                    case "Mr."   -> statement.setInt(2, 1);
-                    case "Mrs."  -> statement.setInt(2, 2);
-                    case "Ms."   -> statement.setInt(2,3);
-                    case "Dr."   -> statement.setInt(2, 4);
-                    case "Drs."  -> statement.setInt(2, 5);
-                    case "Hon."  -> statement.setInt(2, 6);
-                    case "Prof." -> statement.setInt(2, 7);
+                    case "Mr."   -> statement.setInt(3, 1);
+                    case "Mrs."  -> statement.setInt(3, 2);
+                    case "Ms."   -> statement.setInt(3,3);
+                    case "Dr."   -> statement.setInt(3, 4);
+                    case "Drs."  -> statement.setInt(3, 5);
+                    case "Hon."  -> statement.setInt(3, 6);
+                    case "Prof." -> statement.setInt(3, 7);
                 }
-                statement.setString(3, emp.getFirstName());
-                statement.setString(4, emp.getMiddleInitial());
-                statement.setString(5, emp.getLastName());
+                statement.setString(4, emp.getFirstName());
+                statement.setString(5, emp.getMiddleInitial());
+                statement.setString(6, emp.getLastName());
 
-                if (emp.getGender().equals("M")) statement.setInt(6, 1);
-                else statement.setInt(6, 2);
+                if (emp.getGender().equals("M")) statement.setInt(7, 1);
+                else statement.setInt(7, 2);
 
-                statement.setString(7, emp.getEmail());
-                statement.setDate(8, emp.getDateOfBirth());
-                statement.setDate(9, emp.getDateOfJoining());
-                statement.setInt(10, emp.getSalary());
+                statement.setString(8, emp.getEmail());
+                statement.setDate(9, emp.getDateOfBirth());
+                statement.setDate(10, emp.getDateOfJoining());
+                statement.setInt(11, emp.getSalary());
                 int rowsInserted = statement.executeUpdate();
+                i++;
                 totalRows += rowsInserted;
                 close(statement);
             }
@@ -97,6 +100,62 @@ public class JDBCDriver {
         results[1] = String.valueOf((stop - start) / 1000000);
         return results;
     }
+
+    public static String[] insertAll2(ArrayList<Employee> employees) {
+        int totalRows = 0;
+        PreparedStatement statement = null;
+        long start = System.nanoTime();
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:employees.db")) {
+            int i = 1;
+            int j = 0;
+            for (Employee emp : employees) {
+                statement = conn.prepareStatement(SQL_QUERIES.get("sqlInsert"));
+                statement.setInt(1, i);
+                statement.setInt(2, emp.getEmpID());
+                switch (emp.getNamePrefix()) {
+                    case "Mr."   -> statement.setInt(3, 1);
+                    case "Mrs."  -> statement.setInt(3, 2);
+                    case "Ms."   -> statement.setInt(3,3);
+                    case "Dr."   -> statement.setInt(3, 4);
+                    case "Drs."  -> statement.setInt(3, 5);
+                    case "Hon."  -> statement.setInt(3, 6);
+                    case "Prof." -> statement.setInt(3, 7);
+                }
+                statement.setString(4, emp.getFirstName());
+                statement.setString(5, emp.getMiddleInitial());
+                statement.setString(6, emp.getLastName());
+
+                if (emp.getGender().equals("M")) statement.setInt(7, 1);
+                else statement.setInt(7, 2);
+
+                statement.setString(8, emp.getEmail());
+                statement.setDate(9, emp.getDateOfBirth());
+                statement.setDate(10, emp.getDateOfJoining());
+                statement.setInt(11, emp.getSalary());
+
+                i++;
+                statement.addBatch();
+                j++;
+                if (j >= 100) {
+                    conn.setAutoCommit(false);
+                    statement.executeBatch();
+                    conn.setAutoCommit(true);
+                    totalRows += j;
+                    j = 0;
+                }
+            }
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        } finally {
+            close(statement);
+        }
+        long stop = System.nanoTime();
+        String[] results = new String[2];
+        results[0] = String.valueOf(totalRows);
+        results[1] = String.valueOf((stop - start) / 1000000);
+        return results;
+    }
+
     public static void close(Statement statement) {
         try {
             if (statement != null) {

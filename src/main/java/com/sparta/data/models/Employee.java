@@ -3,6 +3,7 @@ package com.sparta.data.models;
 import java.sql.Date;
 
 public class Employee {
+    private Integer newId = null;
     private int empID;
     private String namePrefix;
     private String firstName;
@@ -27,6 +28,10 @@ public class Employee {
         this.dateOfJoining = dateOfJoining;
         this.salary = salary;
     }
+
+    public Integer getNewId() { return newId; }
+
+    public void setNewId(Integer newId) { this.newId = newId; }
 
     public int getEmpID() {
         return empID;

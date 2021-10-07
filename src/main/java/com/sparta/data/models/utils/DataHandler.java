@@ -1,6 +1,7 @@
 package com.sparta.data.models.utils;
 
 import com.sparta.data.models.Employee;
+import com.sparta.data.models.WriteableEmployee;
 
 import java.sql.Date;
 import java.text.ParseException;
@@ -9,6 +10,7 @@ import java.util.*;
 
 public class DataHandler {
     private ArrayList<Employee> employeesArr = new ArrayList<>();
+    private ArrayList<WriteableEmployee> writeableEmployeesArr = new ArrayList<>();
     public String[] readFromCSVToEmployees(String filePath) {
         long start = System.nanoTime();
         List<String[]> listOfStrArr = CSVAccessor.readCSVToList(filePath);
@@ -17,7 +19,7 @@ public class DataHandler {
         long createObjsStart = System.nanoTime();
         for (String[] data : listOfStrArr) {
             data = tryCleanDates(data);
-            if (isValidEmployeeData(data))
+            if (DataValidator.isValidEmployeeData(data))
                 employeesArr.add(stringArrToEmployee(data));
             i++;
         }
@@ -28,35 +30,6 @@ public class DataHandler {
         returnArr[2] = String.valueOf((readStop - start) / 1000000);
         returnArr[3] = String.valueOf((createStop - createObjsStart) / 1000000);
         return returnArr;
-    }
-
-    public boolean isValidEmployeeData(String[] data) {
-        boolean validData = true;
-        try {
-            int empId = Integer.parseInt(data[0]);
-            if (empId < 0) validData = false;
-            String namePrefix = data[1];
-            if (namePrefix.length() > 5 || !namePrefix.matches("[a-zA-Z]+\\.")) validData = false;
-            String firstName = data[2];
-            if (firstName.length() > 255 || !firstName.matches("\\p{L}+")) validData = false;
-            String middleInitial = data[3];
-            if (middleInitial.length() > 5 || !middleInitial.matches("[a-zA-Z\\.]+")) validData = false;
-            String lastName = data[4];
-            if (lastName.length() > 256 || !lastName.matches("\\p{L}+")) validData = false;
-            String gender = data[5];
-            if (!gender.matches("[FMfm]")) validData = false;
-            String email = data[6];
-            if (!email.matches("^(.+)@(.+)$")) validData = false;
-            Date dateOfBirth = Date.valueOf(data[7]);
-            Date dateOfJoining = Date.valueOf(data[8]);
-            int salary  = Integer.parseInt(data[9]);
-            if (salary < 0) validData = false;
-        } catch (IllegalArgumentException e) {
-            validData = false;
-            System.err.println("Invalid input");
-        }
-        if (!validData) System.out.println("Invalid Data.");
-        return validData;
     }
 
     public String[] tryCleanDates(String[] data) {
@@ -78,6 +51,12 @@ public class DataHandler {
     public Employee stringArrToEmployee(String[] params) {
         return new Employee(Integer.parseInt(params[0]), params[1], params[2], params[3], params[4], params[5],
                 params[6], Date.valueOf(params[7]), Date.valueOf(params[8]), Integer.parseInt(params[9]));
+    }
+
+    public void employeesToWriteableEmployees(Employee employee) {
+        for (int i = 1; i < employeesArr.size(); i++) {
+            writeableEmployeesArr.add(new WriteableEmployee(employee, i));
+        }
     }
 
     public ArrayList<Employee> getEmployeesArr() {
