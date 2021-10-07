@@ -43,11 +43,11 @@ public class DataValidator {
 
             String gender = data[5];
             Matcher genderMatcher = GENDER_PATTERN.matcher(gender);
-            if (genderMatcher.find()) validData = false;
+            if (!genderMatcher.find()) validData = false;
 
             String email = data[6];
             Matcher emailMatcher = EMAIL_PATTERN.matcher(email);
-            if (emailMatcher.find()) validData = false;
+            if (!emailMatcher.find()) validData = false;
 
             Date dateOfBirth = Date.valueOf(data[7]);
             Date dateOfJoining = Date.valueOf(data[8]);

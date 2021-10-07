@@ -41,20 +41,22 @@ public class DataHandlerView {
     }
 
     public static void displayInitialisationResults(long timeTaken) {
-        System.out.println("Database Initialised.");
-        System.out.println("Time taken to initialise database: " + timeTaken + " ms");
+        System.out.println("------ Database Initialisation results ------");
+        System.out.println("Time taken to initialise database: " + timeTaken + " ms\n");
     }
 
     public static void displayReadResults(String[] stats) {
+        System.out.println("------ Displaying Read results ------");
         System.out.println("Size of valid objects array: " + stats[0]);
         System.out.println("Size of rejects: " + stats[1]);
         System.out.println("Invalid entries written to 'Rejects.csv'");
         System.out.println("Total time taken to read: " + stats[2] + " ms");
-        System.out.println("Total time taken to create objects: " + stats[3] + " ms");
+        System.out.println("Total time taken to create objects: " + stats[3] + " ms\n");
     }
 
     public static void displayInsertResults(String[] stats) {
+        System.out.println("------ Displaying Insertion results ------");
         System.out.println("Number of rows written: " + stats[0]);
-        System.out.println("Total time taken to insert: " + stats[1] + " ms");
+        System.out.println("Total time taken to insert: " + stats[1] + " ms\n");
     }
 }

@@ -3,10 +3,14 @@ package com.sparta.data.models.utils;
 import com.sparta.data.models.Employee;
 import com.sparta.data.models.WriteableEmployee;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DataHandler {
     private ArrayList<Employee> employeesArr = new ArrayList<>();
@@ -15,20 +19,40 @@ public class DataHandler {
         long start = System.nanoTime();
         List<String[]> listOfStrArr = CSVAccessor.readCSVToList(filePath);
         long readStop = System.nanoTime();
-        int i = 0;
         long createObjsStart = System.nanoTime();
         for (String[] data : listOfStrArr) {
             data = tryCleanDates(data);
             if (DataValidator.isValidEmployeeData(data))
                 employeesArr.add(stringArrToEmployee(data));
-            i++;
         }
-        long createStop = System.nanoTime();
+        long createObjsStop = System.nanoTime();
         String[] returnArr = new String[4];
         returnArr[0] = String.valueOf(employeesArr.size());
         returnArr[1] = String.valueOf(CSVAccessor.getDuplicates().size());
         returnArr[2] = String.valueOf((readStop - start) / 1000000);
-        returnArr[3] = String.valueOf((createStop - createObjsStart) / 1000000);
+        returnArr[3] = String.valueOf((createObjsStop - createObjsStart) / 1000000);
+        return returnArr;
+    }
+
+    public String[] functionalReadFromCSVToWriteableEmployees(String filePath) {
+        // This is absurdly powerful. 90% of my program in 1 stream. Cool, but doesn't save duplicates.
+        long start = System.nanoTime();
+        try {
+            writeableEmployeesArr = Files.lines(Paths.get(filePath))
+                    .map(line -> Arrays.stream(line.split(",")).toArray())
+                    .map(line -> tryCleanDates((String[])line))
+                    .filter(DataValidator::isValidEmployeeData)
+                    .map(this::stringArrToEmployee)
+                    .map(WriteableEmployee::new)
+                    .collect(Collectors.toCollection(ArrayList::new));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        long createObjsStop = System.nanoTime();
+        String[] returnArr = new String[3];
+        returnArr[0] = String.valueOf(employeesArr.size());
+        returnArr[1] = String.valueOf(CSVAccessor.getDuplicates().size());
+        returnArr[2] = String.valueOf((createObjsStop - start) / 1000000);
         return returnArr;
     }
 
@@ -54,12 +78,11 @@ public class DataHandler {
     }
 
     public void employeesToWriteableEmployees(ArrayList<Employee> employees) {
-        int i = 1;
-        for (Employee employee : employees) {
-            writeableEmployeesArr.add(new WriteableEmployee(employee, i));
-            i ++;
-        }
-        System.out.println("Employees converted.");
+        writeableEmployeesArr = employees
+                .stream()
+                .map(WriteableEmployee::new)
+                .collect(Collectors.toCollection(ArrayList::new));
+        System.out.println("------ Employees converted ------");
     }
 
     public ArrayList<Employee> getEmployeesArr() {

@@ -3,7 +3,6 @@ package com.sparta.data.models;
 import java.sql.Date;
 
 public class WriteableEmployee {
-    private Integer newId = null;
     private Integer empNumber;
     private Integer prefixId;
     private String firstName;
@@ -15,8 +14,7 @@ public class WriteableEmployee {
     private Date dateOfJoining;
     private int salary;
 
-    public WriteableEmployee(Employee employee, int i) {
-        this.newId = i;
+    public WriteableEmployee(Employee employee) {
         this.empNumber = employee.getEmpNumber();
         switch (employee.getNamePrefix()) {
             case "Mr."   -> this.prefixId = 1;
@@ -39,10 +37,6 @@ public class WriteableEmployee {
         this.dateOfJoining = employee.getDateOfJoining();
         this.salary = employee.getSalary();
     }
-
-    public Integer getNewId() { return newId; }
-
-    public void setNewId(Integer newId) { this.newId = newId; }
 
     public int getEmpNumber() {
         return empNumber;
