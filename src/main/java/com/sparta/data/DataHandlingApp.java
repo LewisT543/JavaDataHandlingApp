@@ -1,7 +1,6 @@
 package com.sparta.data;
 
 import com.sparta.data.controller.Controller;
-import com.sparta.data.models.utils.CSVAccessor;
 import com.sparta.data.models.utils.DataHandler;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -15,6 +14,6 @@ public class DataHandlingApp {
     public static void main(String[] args) throws IOException {
         Controller controller = new Controller(new DataHandler(), errorLogger);
         PropertyConfigurator.configure("log4j.properties");
-        controller.readObjectsIn();
+        controller.readAndWrite();
     }
 }

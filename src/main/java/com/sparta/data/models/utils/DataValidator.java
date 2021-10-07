@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// Potentially make this class synchronized if I want to use multiThreaded reading
+
 public class DataValidator {
     // Using EagerInitialisedSingleton as we will always need this class. But only 1 of them.
     private static final DataValidator instance = new DataValidator();
@@ -20,6 +22,7 @@ public class DataValidator {
     }
 
     public static boolean isValidEmployeeData(String[] data) {
+        // Maybe rethink this as a boolean array with a separate variable for each data check.
         boolean validData = true;
         try {
             int empId = Integer.parseInt(data[0]);
@@ -27,7 +30,7 @@ public class DataValidator {
 
             String namePrefix = data[1];
             Matcher namePrefixMatcher = NAME_PREFIX_PATTERN.matcher(namePrefix);
-            if (namePrefix.length() > 5 || !namePrefixMatcher.find()) validData = false;
+            if (!namePrefixMatcher.find()) validData = false;
 
             String firstName = data[2];
             Matcher firstNameMatcher = NAME_PATTERN.matcher(firstName);
@@ -35,7 +38,7 @@ public class DataValidator {
 
             String middleInitial = data[3];
             Matcher middleInitialMatcher = MIDDLE_INITIAL_PATTERN.matcher(middleInitial);
-            if (middleInitial.length() > 5 || !middleInitialMatcher.find()) validData = false;
+            if (middleInitial.length() > 25 || !middleInitialMatcher.find()) validData = false;
 
             String lastName = data[4];
             Matcher lastNameMatcher = NAME_PATTERN.matcher(lastName);

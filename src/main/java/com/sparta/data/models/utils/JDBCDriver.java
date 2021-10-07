@@ -33,9 +33,9 @@ public class JDBCDriver {
         put("sqlInsert", "INSERT INTO employees (prefix_id, f_name, mid_initial, l_name, gender_id, " +
                 "email, date_of_birth, date_of_joining, salary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
     }};
-    public static long initialiseDb() {
+    public static long initialiseDb(String dbConnection) {
         long start = System.nanoTime();
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:employees.db")) {
+        try (Connection conn = DriverManager.getConnection(dbConnection)) {
             Statement statement = conn.createStatement();
             statement.execute(SQL_QUERIES.get("sqlDropEmp"));
             statement.execute(SQL_QUERIES.get("sqlDropPref"));
@@ -54,26 +54,15 @@ public class JDBCDriver {
     }
 
     // Add data
-    public static String[] insertAllBatchesOf100(ArrayList<WriteableEmployee> employees) {
+    public static String[] insertAllBatchesOf100(ArrayList<WriteableEmployee> employees, String dbConnection) {
         int totalRows = 0;
         PreparedStatement statement = null;
         long start = System.nanoTime();
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:employees.db")) {
+        try (Connection conn = DriverManager.getConnection(dbConnection)) {
             int j = 0;
+            int iterations = 0;
             for (WriteableEmployee emp : employees) {
                 statement = conn.prepareStatement(SQL_QUERIES.get("sqlInsert"));
-//                statement.setInt(1, emp.getNewId());
-//                statement.setInt(2, emp.getEmpNumber());
-//                statement.setInt(3, emp.getPrefixId());
-//                statement.setString(4, emp.getFirstName());
-//                statement.setString(5, emp.getMiddleInitial());
-//                statement.setString(6, emp.getLastName());
-//                statement.setInt(7, emp.getGenderId());
-//                statement.setString(8, emp.getEmail());
-//                statement.setDate(9, emp.getDateOfBirth());
-//                statement.setDate(10, emp.getDateOfJoining());
-//                statement.setInt(11, emp.getSalary());
-
                 statement.setInt(1, emp.getPrefixId());
                 statement.setString(2, emp.getFirstName());
                 statement.setString(3, emp.getMiddleInitial());
@@ -85,7 +74,8 @@ public class JDBCDriver {
                 statement.setInt(9, emp.getSalary());
                 statement.addBatch();
                 j++;
-                if (j >= 100) {
+                iterations++;
+                if (j >= 100 || employees.size() - iterations < 100) {
                     conn.setAutoCommit(false);
                     statement.executeBatch();
                     conn.setAutoCommit(true);
