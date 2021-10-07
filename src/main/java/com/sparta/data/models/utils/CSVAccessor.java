@@ -1,7 +1,5 @@
 package com.sparta.data.models.utils;
 
-import com.sparta.data.models.Employee;
-
 import java.io.*;
 import java.util.*;
 
@@ -27,6 +25,10 @@ public class CSVAccessor {
             System.err.println("Problem with entry - log me");
         }
         return validLines;
+    }
+
+    public static ArrayList<String[]> getDuplicates() {
+        return duplicates;
     }
 
 //    public static void writeArrLstStrToCSV(String filePath, ArrayList<String[]> arr) {
@@ -57,7 +59,5 @@ public class CSVAccessor {
 //        }
 //    }
 
-    public static ArrayList<String[]> getDuplicates() {
-        return duplicates;
-    }
+
 }

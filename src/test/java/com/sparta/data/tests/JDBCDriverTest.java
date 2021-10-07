@@ -22,12 +22,12 @@ public class JDBCDriverTest {
     @Test
     public void insertTest() {
         // "yyyy-[m]m-[d]d"
-        ArrayList<Employee> employees = new ArrayList<>();
-        employees.add(new Employee(945178,"Ms.","Beulah","J","Weeks", "F",
-                "beulah.weeks@aol.com", Date.valueOf("1975-4-5"), Date.valueOf("2011-2-11"),139978));
-        employees.add(new Employee(942222,"Ms.","Deulah","J","Reeks", "M",
-                "beulah.bop@aol.com", Date.valueOf("1975-4-10"), Date.valueOf("2011-6-11"),159978));
-        JDBCDriver.insertAll(employees);
+//        ArrayList<Employee> employees = new ArrayList<>();
+//        employees.add(new Employee(945178,"Ms.","Beulah","J","Weeks", "F",
+//                "beulah.weeks@aol.com", Date.valueOf("1975-4-5"), Date.valueOf("2011-2-11"),139978));
+//        employees.add(new Employee(942222,"Ms.","Deulah","J","Reeks", "M",
+//                "beulah.bop@aol.com", Date.valueOf("1975-4-10"), Date.valueOf("2011-6-11"),159978));
+//        JDBCDriver.insertAllBatchesOf100(employees);
         // TODO: check the db for inserts.
     }
 }

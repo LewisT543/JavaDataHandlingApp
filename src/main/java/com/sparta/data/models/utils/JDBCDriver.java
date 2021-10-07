@@ -7,6 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+// Runtime.getRuntime().availableProcessors()
 // TODO: Something wrong with dates, explore different types compatible with SQLite
 // TODO: for some reason my employeeID is auto incrementing, nothing in my SQL says it should, but it is anyway
 
@@ -65,7 +66,7 @@ public class JDBCDriver {
                 statement = conn.prepareStatement(SQL_QUERIES.get("sqlInsert"));
                 statement.setInt(1, i);
                 statement.setInt(2, emp.getEmpNumber());
-                statement.setInt(3, emp.getPrefixId())
+                statement.setInt(3, emp.getPrefixId());
                 statement.setString(4, emp.getFirstName());
                 statement.setString(5, emp.getMiddleInitial());
                 statement.setString(6, emp.getLastName());
