@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class WriteableEmployee {
     private Integer newId = null;
-    private Integer empId;
+    private Integer empNumber;
     private Integer prefixId;
     private String firstName;
     private String middleInitial;
@@ -15,25 +15,9 @@ public class WriteableEmployee {
     private Date dateOfJoining;
     private int salary;
 
-    public WriteableEmployee(Integer newId, Integer empId, Integer prefixId, String firstName,
-                             String middleInitial, String lastName, Integer genderId, String email,
-                             Date dateOfBirth, Date dateOfJoining, int salary) {
-        this.newId = newId;
-        this.empId = empId;
-        this.prefixId = prefixId;
-        this.firstName = firstName;
-        this.middleInitial = middleInitial;
-        this.lastName = lastName;
-        this.genderId = genderId;
-        this.email = email;
-        this.dateOfBirth = dateOfBirth;
-        this.dateOfJoining = dateOfJoining;
-        this.salary = salary;
-    }
-
     public WriteableEmployee(Employee employee, int i) {
         this.newId = i;
-        this.empId = employee.getEmpID();
+        this.empNumber = employee.getEmpNumber();
         switch (employee.getNamePrefix()) {
             case "Mr."   -> this.prefixId = 1;
             case "Mrs."  -> this.prefixId = 2;
@@ -60,12 +44,12 @@ public class WriteableEmployee {
 
     public void setNewId(Integer newId) { this.newId = newId; }
 
-    public int getEmpId() {
-        return empId;
+    public int getEmpNumber() {
+        return empNumber;
     }
 
-    public void setEmpId(int empId) {
-        this.empId = empId;
+    public void setEmpNumber(int empNumber) {
+        this.empNumber = empNumber;
     }
 
     public Integer getPrefixId() {
@@ -142,7 +126,7 @@ public class WriteableEmployee {
 
     @Override
     public String toString() {
-        return empId + "," + prefixId + "," + firstName + "," + middleInitial + "," + lastName + "," + genderId + ","
+        return empNumber + "," + prefixId + "," + firstName + "," + middleInitial + "," + lastName + "," + genderId + ","
                 + email + "," + dateOfBirth + "," + dateOfJoining + "," + salary;
     }
 }

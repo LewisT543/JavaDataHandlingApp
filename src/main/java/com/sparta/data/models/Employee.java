@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class Employee {
     private Integer newId = null;
-    private int empID;
+    private int empNumber;
     private String namePrefix;
     private String firstName;
     private String middleInitial;
@@ -15,9 +15,9 @@ public class Employee {
     private Date dateOfJoining;
     private int salary;
 
-    public Employee(int empID, String namePrefix, String firstName, String middleInitial, String lastName,
+    public Employee(int empNumber, String namePrefix, String firstName, String middleInitial, String lastName,
                     String gender, String email, Date dateOfBirth, Date dateOfJoining, int salary) {
-        this.empID = empID;
+        this.empNumber = empNumber;
         this.namePrefix = namePrefix;
         this.firstName = firstName;
         this.middleInitial = middleInitial;
@@ -33,12 +33,12 @@ public class Employee {
 
     public void setNewId(Integer newId) { this.newId = newId; }
 
-    public int getEmpID() {
-        return empID;
+    public int getEmpNumber() {
+        return empNumber;
     }
 
-    public void setEmpID(int empID) {
-        this.empID = empID;
+    public void setEmpNumber(int empNumber) {
+        this.empNumber = empNumber;
     }
 
     public String getNamePrefix() {
@@ -115,7 +115,7 @@ public class Employee {
 
     @Override
     public String toString() {
-        return empID + "," + namePrefix + "," + firstName + "," + middleInitial + "," + lastName + "," + gender + ","
+        return empNumber + "," + namePrefix + "," + firstName + "," + middleInitial + "," + lastName + "," + gender + ","
                 + email + "," + dateOfBirth + "," + dateOfJoining + "," + salary;
     }
 }

@@ -53,13 +53,20 @@ public class DataHandler {
                 params[6], Date.valueOf(params[7]), Date.valueOf(params[8]), Integer.parseInt(params[9]));
     }
 
-    public void employeesToWriteableEmployees(Employee employee) {
-        for (int i = 1; i < employeesArr.size(); i++) {
+    public void employeesToWriteableEmployees(ArrayList<Employee> employees) {
+        int i = 1;
+        for (Employee employee : employees) {
             writeableEmployeesArr.add(new WriteableEmployee(employee, i));
+            i ++;
         }
+        System.out.println("Employees converted.");
     }
 
     public ArrayList<Employee> getEmployeesArr() {
         return employeesArr;
+    }
+
+    public ArrayList<WriteableEmployee> getWriteableEmployeesArr() {
+        return writeableEmployeesArr;
     }
 }
