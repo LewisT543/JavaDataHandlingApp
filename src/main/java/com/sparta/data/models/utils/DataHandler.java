@@ -36,23 +36,28 @@ public class DataHandler {
 
     public String[] functionalReadFromCSVToWriteableEmployees(String filePath) {
         // This is absurdly powerful. 90% of my program in 1 stream. Cool, but doesn't save duplicates.
+        // According to the internet, this is stupid, and I should just use the apache commons CSV library...
         long start = System.nanoTime();
         try {
-            writeableEmployeesArr = Files.lines(Paths.get(filePath))
-                    .map(line -> Arrays.stream(line.split(",")).toArray())
-                    .map(line -> tryCleanDates((String[])line))
+            ArrayList<String[]> cleanData = (Files.lines(Paths.get(filePath))
+                    .skip(1)
+                    .map(line -> line.split(","))
+                    .map(this::tryCleanDates)
                     .filter(DataValidator::isValidEmployeeData)
-                    .map(this::stringArrToEmployee)
-                    .map(WriteableEmployee::new)
-                    .collect(Collectors.toCollection(ArrayList::new));
+                    .collect(Collectors.toCollection(ArrayList::new)));
+            for (String[] line : cleanData) {
+                employeesArr.add(stringArrToEmployee(line));
+            }
+            employeesToWriteableEmployees(employeesArr);
         } catch (IOException e) {
             e.printStackTrace();
         }
         long createObjsStop = System.nanoTime();
-        String[] returnArr = new String[3];
+        String[] returnArr = new String[4];
         returnArr[0] = String.valueOf(employeesArr.size());
         returnArr[1] = String.valueOf(CSVAccessor.getDuplicates().size());
         returnArr[2] = String.valueOf((createObjsStop - start) / 1000000);
+        returnArr[3] = "All steps done in one, see read time taken for total";
         return returnArr;
     }
 
@@ -83,6 +88,13 @@ public class DataHandler {
                 .map(WriteableEmployee::new)
                 .collect(Collectors.toCollection(ArrayList::new));
         System.out.println("------ Employees converted ------");
+    }
+
+    public ArrayList<ArrayList<WriteableEmployee>> splitEmployeeList(ArrayList<WriteableEmployee> employees, int numThreads) {
+        ArrayList<ArrayList<WriteableEmployee>> chunkedLists = new ArrayList<>();
+        int leftOvers = employees.size() % numThreads;
+        int chunkSize = employees.size() / numThreads;
+        // FINISH ME
     }
 
     public ArrayList<Employee> getEmployeesArr() {

@@ -25,7 +25,7 @@ public class Controller {
     }};
     private final LinkedHashMap<String, String> DATABASE_CONNECTIONS = new LinkedHashMap<>() {{
         put("l", "jdbc:sqlite:employees.db");
-        // ADD MYSQL CONNECTION HERE
+        put("m", "jdbc:mysql://localhost:3306/employees");
     }};
 
     public Controller(DataHandler handler, Logger logger) {
@@ -34,11 +34,10 @@ public class Controller {
     }
 
     public void readAndWrite() {
-        // Which CSV file?
+        DataHandlerView.printWelcomeBanner();
         String choice = DataHandlerView.getInput(CSV_CHOICES, "a file to read from.");
         System.out.println("------ Reading data from CSV ------");
         String[] readStats;
-        // if (file = s)
         if (choice.equals("s")) {
             readStats = handler.readFromCSVToEmployees(CSV_CHOICES.get(choice));
             DataHandlerView.displayReadResults(readStats);
@@ -56,31 +55,12 @@ public class Controller {
                 DataHandlerView.displayReadResults(
                         handler.functionalReadFromCSVToWriteableEmployees(CSV_CHOICES.get(choice)));
             }
+            System.out.println("------ Writing to Database, please wait... ------");
             String[] writeStats = JDBCDriver.insertAllBatchesOf100(
                     handler.getWriteableEmployeesArr(), DATABASE_CONNECTIONS.get(dbChoice));
             DataHandlerView.displayInsertResults(writeStats);
             logger.info("Writing stats: [#rows:" + writeStats[0] + ", timeTaken:" + writeStats[1] + "]");
         }
     }
-
-//    public void readAndWrite() {
-//        String choice = DataHandlerView.getInput(CSV_CHOICES, "a file to read from.");
-//        System.out.println("------ Reading data from CSV ------");
-//        String route = DataHandlerView.getInput(ROUTE_CHOICES, "a style route to take.");
-//        String[] stats;
-//        if (route.equals("o")) {
-//            stats = handler.readFromCSVToEmployees(CSV_CHOICES.get(choice));
-//        } else {
-//            stats = handler.functionalReadFromCSVToWriteableEmployees(CSV_CHOICES.get(choice));
-//        }
-//        //
-//        if (choice.equals("s")) {
-//            DataHandlerView.displayReadResults(stats);
-//            logger.info("Reading stats: [#rows:" + stats[0] + ", #rejects:" + stats[1] + ", #readTime:"
-//                    + stats[2] + ", #createTime:" + stats[3] + "]");
-//        } else {
-//            writeEmployeesToDB(stats);
-//        }
-//    }
 }
 

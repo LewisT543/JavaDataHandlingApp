@@ -7,10 +7,18 @@ public class DataHandlerView {
     private static Scanner scan = new Scanner(System.in);
     public static void printWelcomeBanner() {
         System.out.println("+----------- WELCOME -----------+");
-        System.out.println("| Thanks for using my data app  |");
+        System.out.println("|   Thanks for using my data    |");
+        System.out.println("|         migration app.        |");
         System.out.println("|                               |");
         System.out.println("|   -> Pick a CSV file to <-    |");
         System.out.println("|   ->     work with.     <-    |");
+        System.out.println("|                               |");
+        System.out.println("|   -> Pick a database to <-    |");
+        System.out.println("|   ->  save records to.  <-    |");
+        System.out.println("|                               |");
+        System.out.println("|   ->   Choose a route.  <-    |");
+        System.out.println("|   -> Object oriented or <-    |");
+        System.out.println("|   ->     functional.    <-    |");
         System.out.println("+-------------------------------+");
     }
 

@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class JDBCDriverTest {
     @Test
     public void initialiseDbTest() {
-        System.out.println("Time taken to initialise DB: " + JDBCDriver.initialiseDb());
+        System.out.println("Time taken to initialise DB: " + JDBCDriver.initialiseDb("jdbc:sqlite:employees.db"));
         File file = new File("employees.db");
         assertTrue(file.exists());
         // TODO: read the file. Check that it contains what it's supposed to contain
