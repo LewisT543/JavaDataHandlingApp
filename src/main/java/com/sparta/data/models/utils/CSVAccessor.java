@@ -30,34 +30,4 @@ public class CSVAccessor {
     public static ArrayList<String[]> getDuplicates() {
         return duplicates;
     }
-
-//    public static void writeArrLstStrToCSV(String filePath, ArrayList<String[]> arr) {
-//        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-//            for (String[] entry : arr) {
-//                writer.write(String.join(",", entry));
-//                writer.newLine();
-//            }
-//        } catch (IOException e) {
-//            System.err.println("Error Writing to csv");
-//        }
-//    }
-//
-//    public static void writeLHMToCSV(String filePath, LinkedHashMap<Integer, Employee> map) {
-//        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-//            for (Map.Entry<Integer, Employee> entry : map.entrySet()) {
-//                writer.write(entry.getValue().toString());
-//                writer.newLine();
-//            }
-//        } catch (IOException e) {
-//            System.err.println("Error Writing to csv");
-//        }
-//    }
-//
-//    public static void printDuplicates() {
-//        for (String[] line : duplicates) {
-//            System.out.println(Arrays.toString(line));
-//        }
-//    }
-
-
 }

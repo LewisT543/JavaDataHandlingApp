@@ -10,8 +10,8 @@ public class ThreadDriver extends Thread {
     private int threadID;
     private List<WriteableEmployee> employees;
     private static final HashMap<String, String> SQL_QUERIES = new HashMap<>() {{
-        put("sqlInsert", "INSERT INTO employees (prefix_id, f_name, mid_initial, l_name, gender_id, " +
-                "email, date_of_birth, date_of_joining, salary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        put("sqlInsert", "INSERT INTO employees (employee_number, prefix_id, f_name, mid_initial, l_name, gender_id, " +
+                "email, date_of_birth, date_of_joining, salary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
     }};
 
     public ThreadDriver(int threadID, List<WriteableEmployee> employees) {
@@ -25,33 +25,24 @@ public class ThreadDriver extends Thread {
     }
 
     public synchronized void writeToDB() {
-        String dbConnection = "jdbc:mysql://localhost:3306/employees";
+        String dbConnection = "jdbc:mysql://localhost:3306/employees?rewriteBatchedStatements=true";
         String user = "root";
         String pass = "123xyz";
         PreparedStatement statement = null;
         try (Connection conn = DriverManager.getConnection(dbConnection, user, pass)) {
-            int j = 0;
-            int iterations = 0;
             for (WriteableEmployee emp : employees) {
                 statement = conn.prepareStatement(SQL_QUERIES.get("sqlInsert"));
-                statement.setInt(1, emp.getPrefixId());
-                statement.setString(2, emp.getFirstName());
-                statement.setString(3, emp.getMiddleInitial());
-                statement.setString(4, emp.getLastName());
-                statement.setInt(5, emp.getGenderId());
-                statement.setString(6, emp.getEmail());
-                statement.setDate(7, emp.getDateOfBirth());
-                statement.setDate(8, emp.getDateOfJoining());
-                statement.setInt(9, emp.getSalary());
-                statement.addBatch();
-                j++;
-                iterations++;
-                if (j >= 100 || employees.size() - iterations < 100) {
-                    conn.setAutoCommit(false);
-                    statement.executeBatch();
-                    conn.setAutoCommit(true);
-                    j = 0;
-                }
+                statement.setInt(1, emp.getEmpNumber());
+                statement.setInt(2, emp.getPrefixId());
+                statement.setString(3, emp.getFirstName());
+                statement.setString(4, emp.getMiddleInitial());
+                statement.setString(5, emp.getLastName());
+                statement.setInt(6, emp.getGenderId());
+                statement.setString(7, emp.getEmail());
+                statement.setDate(8, emp.getDateOfBirth());
+                statement.setDate(9, emp.getDateOfJoining());
+                statement.setInt(10, emp.getSalary());
+                statement.execute();
             }
         } catch (SQLException sqle) {
             sqle.printStackTrace();

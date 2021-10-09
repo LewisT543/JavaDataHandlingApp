@@ -7,6 +7,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import java.io.IOException;
 
+// Fix employee number somehow - it is incredibly broken right now
+
 public class DataHandlingApp {
     private static final Logger myLogger = Logger.getLogger("OutputLogger");
     public static void main(String[] args) throws IOException {

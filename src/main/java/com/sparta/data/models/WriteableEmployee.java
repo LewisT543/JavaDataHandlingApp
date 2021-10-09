@@ -3,7 +3,7 @@ package com.sparta.data.models;
 import java.sql.Date;
 
 public class WriteableEmployee {
-    private Integer empNumber;
+    private int empNumber;
     private Integer prefixId;
     private String firstName;
     private String middleInitial;

@@ -36,8 +36,6 @@ public class DataHandler {
     }
 
     public String[] functionalReadFromCSVToWriteableEmployees(String filePath) {
-        // This is absurdly powerful. 90% of my program in 1 stream. Cool, but doesn't save duplicates.
-        // According to the internet, this is stupid, and I should just use the apache commons CSV library...
         long start = System.nanoTime();
         try {
             ArrayList<String[]> cleanData = (Files.lines(Paths.get(filePath))
@@ -103,6 +101,7 @@ public class DataHandler {
         for (int i = leftOvers; i > 0; i--) {
             partitionedArrays.get(i).add(employees.get(employees.size() - i));
         }
+        partitionedArrays.remove(numThreads);
         return partitionedArrays;
     }
 
