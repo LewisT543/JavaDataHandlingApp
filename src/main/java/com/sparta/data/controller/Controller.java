@@ -55,11 +55,22 @@ public class Controller {
                 DataHandlerView.displayReadResults(
                         handler.functionalReadFromCSVToWriteableEmployees(CSV_CHOICES.get(choice)));
             }
-            System.out.println("------ Writing to Database, please wait... ------");
-            String[] writeStats = JDBCDriver.insertAllBatchesOf100(
-                    handler.getWriteableEmployeesArr(), DATABASE_CONNECTIONS.get(dbChoice));
-            DataHandlerView.displayInsertResults(writeStats);
-            logger.info("Writing stats: [#rows:" + writeStats[0] + ", timeTaken:" + writeStats[1] + "]");
+            String[] writeStats;
+            if (dbChoice.equals("l")) {
+                System.out.println("------ Writing to Database, please wait... ------");
+                writeStats = JDBCDriver.insertAllBatchesOf100(
+                        handler.getWriteableEmployeesArr(), DATABASE_CONNECTIONS.get(dbChoice));
+                DataHandlerView.displayInsertResults(writeStats);
+                logger.info("Writing stats: [#rows:" + writeStats[0] + ", timeTaken:" + writeStats[1] + "]");
+            } else {
+                int threads = DataHandlerView.getNumThreadsInput();
+                writeStats = JDBCDriver.threadedInsert(handler.getWriteableEmployeesArr(),
+                        DATABASE_CONNECTIONS.get(dbChoice), threads);
+                DataHandlerView.displayInsertResults(writeStats);
+                logger.info("Writing stats: [#threads:" + threads + ", #rows:" + writeStats[0] + ", timeTaken:" + writeStats[1] + "]");
+            }
+
+
         }
     }
 }

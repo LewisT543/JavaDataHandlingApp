@@ -10,6 +10,7 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class DataHandler {
@@ -90,11 +91,19 @@ public class DataHandler {
         System.out.println("------ Employees converted ------");
     }
 
-    public ArrayList<ArrayList<WriteableEmployee>> splitEmployeeList(ArrayList<WriteableEmployee> employees, int numThreads) {
-        ArrayList<ArrayList<WriteableEmployee>> chunkedLists = new ArrayList<>();
-        int leftOvers = employees.size() % numThreads;
+    public static ArrayList<List<WriteableEmployee>> splitEmployeeList(ArrayList<WriteableEmployee> employees, int numThreads) {
         int chunkSize = employees.size() / numThreads;
-        // FINISH ME
+        int leftOvers = employees.size() % numThreads;
+        AtomicInteger counter = new AtomicInteger();
+        Collection<List<WriteableEmployee>> partitionedList = employees
+                .stream()
+                .collect(Collectors.groupingBy(i -> counter.getAndIncrement() / chunkSize))
+                .values();
+        ArrayList<List<WriteableEmployee>> partitionedArrays = new ArrayList<>(partitionedList);
+        for (int i = leftOvers; i > 0; i--) {
+            partitionedArrays.get(i).add(employees.get(employees.size() - i));
+        }
+        return partitionedArrays;
     }
 
     public ArrayList<Employee> getEmployeesArr() {

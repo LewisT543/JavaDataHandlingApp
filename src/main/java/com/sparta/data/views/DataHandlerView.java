@@ -48,6 +48,20 @@ public class DataHandlerView {
         return myString.toString();
     }
 
+    public static int getNumThreadsInput() {
+        int choice = 0;
+        while (choice < 2 || choice > 100) {
+            System.out.println("Please enter the desired number of threads (2-100): ");
+            while (!scan.hasNextInt()) {
+                scan.nextLine();
+                System.out.println("Not a valid number, please try again: ");
+                scan.nextLine();
+            }
+            choice = scan.nextInt();
+        }
+        return choice;
+    }
+
     public static void displayInitialisationResults(long timeTaken) {
         System.out.println("------ Database Initialisation results ------");
         System.out.println("Time taken to initialise database: " + timeTaken + " ms\n");

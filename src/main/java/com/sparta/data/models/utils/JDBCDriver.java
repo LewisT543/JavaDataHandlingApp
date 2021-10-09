@@ -5,10 +5,9 @@ import com.sparta.data.models.WriteableEmployee;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-// Runtime.getRuntime().availableProcessors()
-// TODO: Something wrong with dates, explore different types compatible with SQLite
-// TODO: for some reason my employeeID is auto incrementing, nothing in my SQL says it should, but it is anyway
+
 
 // Cannot find the "my.ini" configuration file anywhere to make these changes default...
 // BEFORE RUNNING: Configure MySQL server modes
@@ -120,13 +119,27 @@ public class JDBCDriver {
         // each thread must establish a connection, and start preparing statements.
         // batch commit in 100's at a time
         // wait() for all threads at the end, stop the timer and return the stats.
-
-
-
-
+        ArrayList<List<WriteableEmployee>> splitEmployees = DataHandler.splitEmployeeList(employees, numThreads);
+        ArrayList<ThreadDriver> threads = new ArrayList<>();
+        long start = System.nanoTime();
+        for (int i = 1; i <= numThreads; i++) {
+            threads.add(new ThreadDriver(i, splitEmployees.get(i)));
+        }
+        for (ThreadDriver thread : threads) {
+            thread.start();
+        }
+        System.out.println("------ Asynchronous writing to database. ------");
+        try {
+            for (ThreadDriver thread : threads) {
+                thread.join();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("------ Threads completed. ------");
         long stop = System.nanoTime();
         String[] results = new String[2];
-        results[0] = String.valueOf(totalRows);
+        results[0] = String.valueOf(employees.size());
         results[1] = String.valueOf((stop - start) / 1000000);
         return results;
     }

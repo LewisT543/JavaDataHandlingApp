@@ -7,8 +7,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import java.io.IOException;
 
-// Callable statement seems to be the fastest writing method, provided I can create procedures in my DB.
-
 public class DataHandlingApp {
     private static final Logger myLogger = Logger.getLogger("OutputLogger");
     public static void main(String[] args) throws IOException {
