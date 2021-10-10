@@ -10,6 +10,12 @@ This is an example of a data migration app. It's purpose is to read data in from
 - Maven - Dependancy manager.
 - Log4j - Logging.
 
+## Future improvements:
+- A more robust testing suite, the current is somewhat lacking some essential tests for database interaction methods in the JDBCDriver class (left out due to time constraints).
+- Implement a front end GUI equiped with many more diverse query types and a table display view for results.
+- Add compatability for more databases.
+- Potentially parametise the whole programming using column names and number of items in a row as inputs. This would allow for a flexible program capable of dealing with all csv files of similar format.
+
 # How to use
 
 The app is fairly simple, upon running the app the user will be greated with a series of options as to how they would like to process data.
