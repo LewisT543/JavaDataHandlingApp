@@ -24,7 +24,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\EmployeeRecordsTest2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\rejects.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\src\test\java\com\sparta\data\tests\EmployeeRecordsTest.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

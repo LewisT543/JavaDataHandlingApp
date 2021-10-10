@@ -37,6 +37,8 @@ public class JDBCDriver {
 
         put("sqlInsert", "INSERT INTO employees (employee_number, prefix_id, f_name, mid_initial, l_name, gender_id, " +
                 "email, date_of_birth, date_of_joining, salary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        put("sqlRead", "SELECT * FROM employees WHERE id=(?)");
     }};
     public static long initialiseDb(String dbConnection) {
         String user = null;
@@ -65,7 +67,7 @@ public class JDBCDriver {
     }
 
     // Add data
-    public static String[] insertAllBatchesOf100(ArrayList<WriteableEmployee> employees, String dbConnection) {
+    public static String[] insertAllBatchesOf1000(ArrayList<WriteableEmployee> employees, String dbConnection) {
         String user = null;
         String pass = null;
         if (dbConnection.equals("jdbc:mysql://localhost:3306/employees?rewriteBatchedStatements=true")){
@@ -93,15 +95,11 @@ public class JDBCDriver {
                 statement.setInt(10, emp.getSalary());
                 statement.addBatch();
                 if (++count % BATCH_SIZE == 0) {
-                    int[] result = statement.executeBatch();
-                    int rows = ((Arrays.stream(result).sum()) / 2) * -1;
-                    totalRows += rows;
+                    totalRows += ((Arrays.stream(statement.executeBatch()).sum()) / 2) * -1;
                     conn.commit();
                 }
             }
-            int[] result = statement.executeBatch();
-            int rows = ((Arrays.stream(result).sum()) / 2) * -1;
-            totalRows += rows;
+            totalRows += ((Arrays.stream(statement.executeBatch()).sum()) / 2) * -1;
             conn.commit();
             close(statement);
         } catch (SQLException sqle) {
@@ -126,9 +124,10 @@ public class JDBCDriver {
         }
     }
 
-    public static String[] threadedInsert(ArrayList<WriteableEmployee> employees, String dbConnection, int numThreads) {
+    public static String[] threadedInsert(ArrayList<WriteableEmployee> employees, int numThreads) {
         ArrayList<List<WriteableEmployee>> splitEmployees = DataHandler.splitEmployeeList(employees, numThreads);
         ArrayList<ThreadDriver> threads = new ArrayList<>();
+        int rowsWritten = 0;
         long start = System.nanoTime();
         for (int i = 1; i <= numThreads; i++) {
             threads.add(new ThreadDriver(i, splitEmployees.get(i-1)));
@@ -140,6 +139,7 @@ public class JDBCDriver {
         try {
             for (ThreadDriver thread : threads) {
                 thread.join();
+                rowsWritten += thread.getRowsWritten();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -147,8 +147,27 @@ public class JDBCDriver {
         System.out.println("------ Threads completed. ------");
         long stop = System.nanoTime();
         String[] results = new String[2];
-        results[0] = String.valueOf(employees.size());
+        results[0] = String.valueOf(rowsWritten);
         results[1] = String.valueOf((stop - start) / 1000000);
         return results;
+    }
+
+    public static ResultSet read(String dbConnection, int id) {
+        String user = null;
+        String pass = null;
+        ResultSet rs = null;
+        if (dbConnection.equals("jdbc:mysql://localhost:3306/employees?rewriteBatchedStatements=true")){
+            user = "root";
+            pass = "123xyz";
+        }
+        PreparedStatement statement = null;
+        try (Connection conn = DriverManager.getConnection(dbConnection, user, pass)) {
+            statement = conn.prepareStatement(SQL_QUERIES.get("sqlRead"));
+            statement.setInt(1, id);
+            rs = statement.executeQuery();
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return rs;
     }
 }

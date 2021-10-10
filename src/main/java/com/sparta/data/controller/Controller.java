@@ -16,8 +16,8 @@ public class Controller {
         put("x", "Exit program");
     }};
     private final LinkedHashMap<String, String> ROUTE_CHOICES = new LinkedHashMap<>() {{
-        put("o", "Object Oriented route");
-        put("f", "Functional route");
+        put("o", "Object Oriented route (slow)");
+        put("f", "Functional route (very fast)");
     }};
     private final LinkedHashMap<String, String> DATABASE_CHOICES = new LinkedHashMap<>() {{
         put("l", "SQLite");
@@ -28,8 +28,8 @@ public class Controller {
         put("m", "jdbc:mysql://localhost:3306/employees?rewriteBatchedStatements=true");
     }};
     private final LinkedHashMap<String, String> DB_WRITE_METHOD = new LinkedHashMap<>() {{
-        put("b", "Batch Processing (faster)");
-        put("m", "MultiThreading (slower)");
+        put("b", "Batch Processing");
+        put("m", "MultiThreading (slightly faster)");
     }};
 
     public Controller(DataHandler handler, Logger logger) {
@@ -41,27 +41,35 @@ public class Controller {
         DataHandlerView.printWelcomeBanner();
         String choice = DataHandlerView.getInput(CSV_CHOICES, "a file to read from.");
         System.out.println("------ Reading data from CSV ------");
+        // Small CSVFile
         if (choice.equals("s")) {
             readSmallCSV(choice);
+        // Large CSVFile
         } else {
             String dbChoice = DataHandlerView.getInput(DATABASE_CHOICES, "a database to write to.");
             DataHandlerView.displayInitialisationResults(JDBCDriver.initialiseDb(DATABASE_CONNECTIONS.get(dbChoice)));
             String route = DataHandlerView.getInput(ROUTE_CHOICES, "a route preference.");
+            // OOP route (slow)
             if (route.equals("o")) {
                 DataHandlerView.displayReadResults(handler.readFromCSVToEmployees(CSV_CHOICES.get(choice)));
                 handler.employeesToWriteableEmployees(handler.getEmployeesArr());
+            // Functional route (very fast)
             } else {
                 DataHandlerView.displayReadResults(handler.functionalReadFromCSVToWriteableEmployees(CSV_CHOICES.get(choice)));
             }
+            // Write to SQLite DB
             if (dbChoice.equals("l")) {
                 System.out.println("------ Writing to Database, please wait... ------");
-                batch100Insert(dbChoice);
+                batch1000Insert(dbChoice);
+            // Write to MySQL DB
             } else {
                 String writeChoice = DataHandlerView.getInput(DB_WRITE_METHOD, "a method to write to database.");
+                // MultiThreaded write
                 if (writeChoice.equals("m")) {
-                    threadInsert(dbChoice);
+                    threadInsert();
+                // Regular batch writing
                 } else {
-                    batch100Insert(dbChoice);
+                    batch1000Insert(dbChoice);
                 }
             }
         }
@@ -73,16 +81,16 @@ public class Controller {
                 + readStats[2] + ", #createTime:" + readStats[3] + "]");
     }
 
-    public void batch100Insert(String dbChoice) {
-        String[] writeStats = JDBCDriver.insertAllBatchesOf100(
+    public void batch1000Insert(String dbChoice) {
+        String[] writeStats = JDBCDriver.insertAllBatchesOf1000(
                 handler.getWriteableEmployeesArr(), DATABASE_CONNECTIONS.get(dbChoice));
         DataHandlerView.displayInsertResults(writeStats);
         logger.info("Writing stats: [#rows:" + writeStats[0] + ", timeTaken:" + writeStats[1] + "]");
     }
-    public void threadInsert(String dbChoice) {
-        int threads = DataHandlerView.getNumThreadsInput();
-        String[] writeStats = JDBCDriver.threadedInsert(handler.getWriteableEmployeesArr(),
-                DATABASE_CONNECTIONS.get(dbChoice), threads);
+
+    public void threadInsert() {
+        int threads = DataHandlerView.getIntegerInput(2, 100);
+        String[] writeStats = JDBCDriver.threadedInsert(handler.getWriteableEmployeesArr(), threads);
         DataHandlerView.displayInsertResults(writeStats);
         logger.info("Writing stats: [#threads:" + threads + ", #rows:" + writeStats[0] + ", timeTaken:" + writeStats[1] + "]");
     }

@@ -1,5 +1,7 @@
 package com.sparta.data.views;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
 
@@ -48,9 +50,9 @@ public class DataHandlerView {
         return myString.toString();
     }
 
-    public static int getNumThreadsInput() {
+    public static int getIntegerInput(int lowerBound, int upperBound) {
         int choice = 0;
-        while (choice < 2 || choice > 100) {
+        while (choice < lowerBound || choice > upperBound) {
             System.out.println("Please enter the desired number of threads (2-100): ");
             while (!scan.hasNextInt()) {
                 scan.nextLine();
@@ -80,5 +82,26 @@ public class DataHandlerView {
         System.out.println("------ Displaying Insertion results ------");
         System.out.println("Number of rows written: " + stats[0]);
         System.out.println("Total time taken to insert: " + stats[1] + " ms\n");
+    }
+
+    public static void displayReadResults(ResultSet rs) {
+        System.out.println("------ Displaying Query result ------");
+            try {
+                while (rs.next()) {
+                    System.out.print("ID: " + rs.getInt("id"));
+                    System.out.print(", Emp_number: " + rs.getInt("employee_number"));
+                    System.out.print(", Prefix_ID: " + rs.getInt("prefix_id"));
+                    System.out.print(", First_Name: " + rs.getString("f_name"));
+                    System.out.print(", Initial: " + rs.getString("mid_initial"));
+                    System.out.print(", Last_Name: " + rs.getString("l_name"));
+                    System.out.print(", Gender_ID: " + rs.getInt("gender_id"));
+                    System.out.print(", Email: " + rs.getString("email"));
+                    System.out.print(", DOB: " + String.valueOf(rs.getDate("date_of_birth"));
+                    System.out.print(", Joined_On: " + String.valueOf(rs.getDate("date_of_joining"));
+                    System.out.print(", Salary: " + rs.getInt("salary"));
+                }
+            } catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
     }
 }

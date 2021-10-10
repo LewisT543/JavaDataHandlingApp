@@ -4,8 +4,6 @@ import java.sql.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// Potentially make this class synchronized if I want to use multiThreaded reading
-
 public class DataValidator {
     // Using EagerInitialisedSingleton as we will always need this class. But only 1 of them.
     private static final DataValidator instance = new DataValidator();
