@@ -38,26 +38,26 @@ public class Controller {
         this.logger = logger;
     }
 
-    public String createAndWrite() {
+    public String[] createAndWrite() {
         DataHandlerView.printWelcomeBanner();
-        String choice = DataHandlerView.getInput(CSV_CHOICES, "a file to read from.");
+        String fileChoice = DataHandlerView.getInput(CSV_CHOICES, "a file to read from");
         String dbChoice = null;
         System.out.println("------ Reading data from CSV ------");
         // Small CSVFile
-        if (choice.equals("s")) {
-            readSmallCSV(choice);
+        if (fileChoice.equals("s")) {
+            readSmallCSV(fileChoice);
         // Large CSVFile
         } else {
-            dbChoice = DataHandlerView.getInput(DATABASE_CHOICES, "a database to write to.");
+            dbChoice = DataHandlerView.getInput(DATABASE_CHOICES, "a database to write to");
             DataHandlerView.displayInitialisationResults(JDBCDriver.initialiseDb(DATABASE_CONNECTIONS.get(dbChoice)));
-            String route = DataHandlerView.getInput(ROUTE_CHOICES, "a route preference.");
+            String route = DataHandlerView.getInput(ROUTE_CHOICES, "a route preference");
             // OOP route (slow)
             if (route.equals("o")) {
-                DataHandlerView.displayQueryResults(handler.readFromCSVToEmployees(CSV_CHOICES.get(choice)));
+                DataHandlerView.displayQueryResults(handler.readFromCSVToEmployees(CSV_CHOICES.get(fileChoice)));
                 handler.employeesToWriteableEmployees(handler.getEmployeesArr());
             // Functional route (very fast)
             } else {
-                DataHandlerView.displayQueryResults(handler.functionalReadFromCSVToWriteableEmployees(CSV_CHOICES.get(choice)));
+                DataHandlerView.displayQueryResults(handler.functionalReadFromCSVToWriteableEmployees(CSV_CHOICES.get(fileChoice)));
             }
             // Write to SQLite DB
             if (dbChoice.equals("l")) {
@@ -65,7 +65,7 @@ public class Controller {
                 batch1000Insert(dbChoice);
             // Write to MySQL DB
             } else {
-                String writeChoice = DataHandlerView.getInput(DB_WRITE_METHOD, "a method to write to database.");
+                String writeChoice = DataHandlerView.getInput(DB_WRITE_METHOD, "a method to write to database");
                 // MultiThreaded write
                 if (writeChoice.equals("m")) {
                     threadInsert();
@@ -75,7 +75,10 @@ public class Controller {
                 }
             }
         }
-        return dbChoice;
+        String[] results = new String[2];
+        results[0] = fileChoice;
+        results[1] = dbChoice;
+        return results;
     }
     public void readSmallCSV(String choice) {
         String[] readStats = handler.readFromCSVToEmployees(CSV_CHOICES.get(choice));
@@ -103,7 +106,7 @@ public class Controller {
     }
 
     public void query(String dbChoice) {
-        System.out.println("Please enter the ID of the employee you wish to view.");
+        System.out.println("Please enter the ID of the employee you wish to view:");
         int idNum = DataHandlerView.getIntegerInput(1, handler.getWriteableEmployeesArr().size(),"an employee ID to query:");
         ResultSet rs = JDBCDriver.read(dbChoice, idNum);
         DataHandlerView.displayQueryResults(rs);

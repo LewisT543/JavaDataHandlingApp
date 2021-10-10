@@ -14,7 +14,7 @@ public class DataHandlingApp {
     public static void main(String[] args) throws IOException {
         Controller controller = new Controller(new DataHandler(), myLogger);
         PropertyConfigurator.configure("log4j.properties");
-        String dbChoice = controller.createAndWrite();
-        while (true) { controller.query(dbChoice); }
+        String[] choices = controller.createAndWrite();
+        while (choices[0].equals("l")) { controller.query(choices[1]); }
     }
 }
