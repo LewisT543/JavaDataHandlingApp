@@ -50,10 +50,10 @@ public class DataHandlerView {
         return myString.toString();
     }
 
-    public static int getIntegerInput(int lowerBound, int upperBound) {
+    public static int getIntegerInput(int lowerBound, int upperBound, String message) {
         int choice = 0;
         while (choice < lowerBound || choice > upperBound) {
-            System.out.println("Please enter the desired number of threads (2-100): ");
+            System.out.println("Please enter " + message);
             while (!scan.hasNextInt()) {
                 scan.nextLine();
                 System.out.println("Not a valid number, please try again: ");
@@ -69,7 +69,7 @@ public class DataHandlerView {
         System.out.println("Time taken to initialise database: " + timeTaken + " ms\n");
     }
 
-    public static void displayReadResults(String[] stats) {
+    public static void displayQueryResults(String[] stats) {
         System.out.println("------ Displaying Read results ------");
         System.out.println("Size of valid objects array: " + stats[0]);
         System.out.println("Size of rejects: " + stats[1]);
@@ -84,7 +84,7 @@ public class DataHandlerView {
         System.out.println("Total time taken to insert: " + stats[1] + " ms\n");
     }
 
-    public static void displayReadResults(ResultSet rs) {
+    public static void displayQueryResults(ResultSet rs) {
         System.out.println("------ Displaying Query result ------");
             try {
                 while (rs.next()) {
@@ -96,8 +96,8 @@ public class DataHandlerView {
                     System.out.print(", Last_Name: " + rs.getString("l_name"));
                     System.out.print(", Gender_ID: " + rs.getInt("gender_id"));
                     System.out.print(", Email: " + rs.getString("email"));
-                    System.out.print(", DOB: " + String.valueOf(rs.getDate("date_of_birth"));
-                    System.out.print(", Joined_On: " + String.valueOf(rs.getDate("date_of_joining"));
+                    System.out.print(", DOB: " + rs.getDate("date_of_birth"));
+                    System.out.print(", Joined_On: " + rs.getDate("date_of_joining"));
                     System.out.print(", Salary: " + rs.getInt("salary"));
                 }
             } catch (SQLException sqle) {

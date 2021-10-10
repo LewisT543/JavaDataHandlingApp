@@ -22,7 +22,7 @@ public class CSVAccessor {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Problem with entry - log me");
+            e.printStackTrace();
         }
         return validLines;
     }

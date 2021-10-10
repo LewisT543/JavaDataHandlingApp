@@ -5,6 +5,7 @@ import com.sparta.data.models.utils.JDBCDriver;
 import com.sparta.data.views.DataHandlerView;
 import org.apache.log4j.Logger;
 
+import java.sql.ResultSet;
 import java.util.LinkedHashMap;
 
 public class Controller {
@@ -37,25 +38,26 @@ public class Controller {
         this.logger = logger;
     }
 
-    public void readAndWrite() {
+    public String createAndWrite() {
         DataHandlerView.printWelcomeBanner();
         String choice = DataHandlerView.getInput(CSV_CHOICES, "a file to read from.");
+        String dbChoice = null;
         System.out.println("------ Reading data from CSV ------");
         // Small CSVFile
         if (choice.equals("s")) {
             readSmallCSV(choice);
         // Large CSVFile
         } else {
-            String dbChoice = DataHandlerView.getInput(DATABASE_CHOICES, "a database to write to.");
+            dbChoice = DataHandlerView.getInput(DATABASE_CHOICES, "a database to write to.");
             DataHandlerView.displayInitialisationResults(JDBCDriver.initialiseDb(DATABASE_CONNECTIONS.get(dbChoice)));
             String route = DataHandlerView.getInput(ROUTE_CHOICES, "a route preference.");
             // OOP route (slow)
             if (route.equals("o")) {
-                DataHandlerView.displayReadResults(handler.readFromCSVToEmployees(CSV_CHOICES.get(choice)));
+                DataHandlerView.displayQueryResults(handler.readFromCSVToEmployees(CSV_CHOICES.get(choice)));
                 handler.employeesToWriteableEmployees(handler.getEmployeesArr());
             // Functional route (very fast)
             } else {
-                DataHandlerView.displayReadResults(handler.functionalReadFromCSVToWriteableEmployees(CSV_CHOICES.get(choice)));
+                DataHandlerView.displayQueryResults(handler.functionalReadFromCSVToWriteableEmployees(CSV_CHOICES.get(choice)));
             }
             // Write to SQLite DB
             if (dbChoice.equals("l")) {
@@ -73,10 +75,11 @@ public class Controller {
                 }
             }
         }
+        return dbChoice;
     }
     public void readSmallCSV(String choice) {
         String[] readStats = handler.readFromCSVToEmployees(CSV_CHOICES.get(choice));
-        DataHandlerView.displayReadResults(readStats);
+        DataHandlerView.displayQueryResults(readStats);
         logger.info("Reading stats: [#rows:" + readStats[0] + ", #rejects:" + readStats[1] + ", #readTime:"
                 + readStats[2] + ", #createTime:" + readStats[3] + "]");
     }
@@ -89,10 +92,21 @@ public class Controller {
     }
 
     public void threadInsert() {
-        int threads = DataHandlerView.getIntegerInput(2, 100);
+        int threads = DataHandlerView.getIntegerInput(2, 100, "the desired number of threads (2-100):");
         String[] writeStats = JDBCDriver.threadedInsert(handler.getWriteableEmployeesArr(), threads);
         DataHandlerView.displayInsertResults(writeStats);
         logger.info("Writing stats: [#threads:" + threads + ", #rows:" + writeStats[0] + ", timeTaken:" + writeStats[1] + "]");
+    }
+
+    public DataHandler getHandler() {
+        return handler;
+    }
+
+    public void query(String dbChoice) {
+        System.out.println("Please enter the ID of the employee you wish to view.");
+        int idNum = DataHandlerView.getIntegerInput(1, handler.getWriteableEmployeesArr().size(),"an employee ID to query:");
+        ResultSet rs = JDBCDriver.read(dbChoice, idNum);
+        DataHandlerView.displayQueryResults(rs);
     }
 }
 

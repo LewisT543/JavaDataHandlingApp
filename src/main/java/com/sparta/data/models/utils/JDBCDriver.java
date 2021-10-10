@@ -10,13 +10,14 @@ import java.util.List;
 
 // Cannot find the "my.ini" configuration file anywhere to make these changes default...
 // BEFORE RUNNING: Configure MySQL server modes
-// SET GLOBAL sql_mode = 'modes';
+// SET GLOBAL sql_mode = '';
 // SET GLOBAL innodb_strict_mode=OFF;
 // Check it has worked with:
 // SELECT @@GLOBAL.sql_mode;
 
 public class JDBCDriver {
     private static final HashMap<String, String> SQL_QUERIES = new HashMap<>() {{
+        // CREATE
         put("sqlDropEmp", "DROP TABLE IF EXISTS employees");
         put("sqlDropPref", "DROP TABLE IF EXISTS prefixs");
         put("sqlDropGen", "DROP TABLE IF EXISTS genders");
@@ -34,10 +35,10 @@ public class JDBCDriver {
                 "date_of_birth DATE, date_of_joining DATE, salary INTEGER, " +
                 "FOREIGN KEY (prefix_id) REFERENCES prefixs (prefix_id), " +
                 "FOREIGN KEY (gender_id) REFERENCES genders (gender_id));");
-
+        // INSERT
         put("sqlInsert", "INSERT INTO employees (employee_number, prefix_id, f_name, mid_initial, l_name, gender_id, " +
                 "email, date_of_birth, date_of_joining, salary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
+        // QUERY
         put("sqlRead", "SELECT * FROM employees WHERE id=(?)");
     }};
     public static long initialiseDb(String dbConnection) {
@@ -66,7 +67,6 @@ public class JDBCDriver {
         return (stop - start) / 1000000;
     }
 
-    // Add data
     public static String[] insertAllBatchesOf1000(ArrayList<WriteableEmployee> employees, String dbConnection) {
         String user = null;
         String pass = null;

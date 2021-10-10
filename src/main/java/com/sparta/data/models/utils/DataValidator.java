@@ -20,7 +20,6 @@ public class DataValidator {
     }
 
     public static boolean isValidEmployeeData(String[] data) {
-        // Maybe rethink this as a boolean array with a separate variable for each data check.
         boolean validData = true;
         try {
             int empId = Integer.parseInt(data[0]);
