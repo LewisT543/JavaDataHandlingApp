@@ -50,3 +50,7 @@ The database writing results will then be displayed. It will also be logged with
 ![image](readmeExtras/write-result.png)
 
 ![image](readmeExtras/write-result-log.png)
+
+Finally the user will be asked for an ID number of an employee they wish to be shown the record for.
+
+![image](readmeExtras/query-result.png)
