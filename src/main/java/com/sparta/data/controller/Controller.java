@@ -62,7 +62,6 @@ public class Controller {
             }
             // Write to SQLite DB
             if (dbChoice.equals("l")) {
-                System.out.println("------ Writing to Database, please wait... ------");
                 batch1000Insert(dbChoice);
             // Write to MySQL DB
             } else {

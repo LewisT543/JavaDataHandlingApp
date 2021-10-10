@@ -39,7 +39,7 @@ public class JDBCDriver {
         put("sqlInsert", "INSERT INTO employees (employee_number, prefix_id, f_name, mid_initial, l_name, gender_id, " +
                 "email, date_of_birth, date_of_joining, salary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         // QUERY
-        put("sqlRead", "SELECT * FROM employees WHERE id=(?)");
+        put("sqlRead", "SELECT * FROM employees WHERE id=?");
     }};
     public static long initialiseDb(String dbConnection) {
         long start = System.nanoTime();
@@ -155,17 +155,19 @@ public class JDBCDriver {
             PreparedStatement statement = conn.prepareStatement(SQL_QUERIES.get("sqlRead"));
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
-            resultList.add(String.valueOf(rs.getInt("id")));
-            resultList.add(String.valueOf(rs.getInt("employee_number")));
-            resultList.add(String.valueOf(rs.getInt("prefix_id")));
-            resultList.add(rs.getString("f_name"));
-            resultList.add(rs.getString("mid_initial"));
-            resultList.add(rs.getString("l_name"));
-            resultList.add(String.valueOf(rs.getInt("gender_id")));
-            resultList.add(rs.getString("email"));
-            resultList.add(String.valueOf(rs.getDate("date_of_birth")));
-            resultList.add(String.valueOf(rs.getDate("date_of_joining")));
-            resultList.add(String.valueOf(rs.getInt("salary")));
+            while (rs.next()) {
+                resultList.add(String.valueOf(rs.getInt("id")));
+                resultList.add(String.valueOf(rs.getInt("employee_number")));
+                resultList.add(String.valueOf(rs.getInt("prefix_id")));
+                resultList.add(rs.getString("f_name"));
+                resultList.add(rs.getString("mid_initial"));
+                resultList.add(rs.getString("l_name"));
+                resultList.add(String.valueOf(rs.getInt("gender_id")));
+                resultList.add(rs.getString("email"));
+                resultList.add(String.valueOf(rs.getDate("date_of_birth")));
+                resultList.add(String.valueOf(rs.getDate("date_of_joining")));
+                resultList.add(String.valueOf(rs.getInt("salary")));
+            }
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
