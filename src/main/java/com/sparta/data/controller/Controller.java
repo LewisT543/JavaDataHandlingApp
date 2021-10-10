@@ -6,6 +6,7 @@ import com.sparta.data.views.DataHandlerView;
 import org.apache.log4j.Logger;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class Controller {
@@ -26,7 +27,7 @@ public class Controller {
     }};
     private final LinkedHashMap<String, String> DATABASE_CONNECTIONS = new LinkedHashMap<>() {{
         put("l", "jdbc:sqlite:employees.db");
-        put("m", "jdbc:mysql://localhost:3306/employees?rewriteBatchedStatements=true");
+        put("m", "jdbc:mysql://root:123xyz@localhost:3306/employees?rewriteBatchedStatements=true");
     }};
     private final LinkedHashMap<String, String> DB_WRITE_METHOD = new LinkedHashMap<>() {{
         put("b", "Batch Processing");
@@ -106,10 +107,9 @@ public class Controller {
     }
 
     public void query(String dbChoice) {
-        System.out.println("Please enter the ID of the employee you wish to view:");
         int idNum = DataHandlerView.getIntegerInput(1, handler.getWriteableEmployeesArr().size(),"an employee ID to query:");
-        ResultSet rs = JDBCDriver.read(dbChoice, idNum);
-        DataHandlerView.displayQueryResults(rs);
+        ArrayList<String> results = JDBCDriver.read(DATABASE_CONNECTIONS.get(dbChoice), idNum);
+        DataHandlerView.displayQueryResults(results, true);
     }
 }
 

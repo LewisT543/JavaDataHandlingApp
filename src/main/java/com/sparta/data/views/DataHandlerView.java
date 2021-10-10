@@ -2,8 +2,8 @@ package com.sparta.data.views;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class DataHandlerView {
     private static Scanner scan = new Scanner(System.in);
@@ -84,24 +84,25 @@ public class DataHandlerView {
         System.out.println("Total time taken to insert: " + stats[1] + " ms\n");
     }
 
-    public static void displayQueryResults(ResultSet rs) {
-        System.out.println("------ Displaying Query result ------");
-            try {
-                while (rs.next()) {
-                    System.out.print("ID: " + rs.getInt("id"));
-                    System.out.print(", Emp_number: " + rs.getInt("employee_number"));
-                    System.out.print(", Prefix_ID: " + rs.getInt("prefix_id"));
-                    System.out.print(", First_Name: " + rs.getString("f_name"));
-                    System.out.print(", Initial: " + rs.getString("mid_initial"));
-                    System.out.print(", Last_Name: " + rs.getString("l_name"));
-                    System.out.print(", Gender_ID: " + rs.getInt("gender_id"));
-                    System.out.print(", Email: " + rs.getString("email"));
-                    System.out.print(", DOB: " + rs.getDate("date_of_birth"));
-                    System.out.print(", Joined_On: " + rs.getDate("date_of_joining"));
-                    System.out.print(", Salary: " + rs.getInt("salary"));
-                }
-            } catch (SQLException sqle) {
-                sqle.printStackTrace();
+    public static void displayQueryResults(ArrayList<String> rs, boolean lJust) {
+        String[] results = rs.toArray(new String[rs.size()]);
+        String[][] table = new String[][] { {"id", "emp_number", "prefix", "f_name", "mid_initial", "l_name", "gender",
+                "email", "date_of_birth", "date_of_joining", "salary"}, results };
+
+        Map<Integer, Integer> columnLengths = new HashMap<>();
+        Arrays.stream(table).forEach(a -> Stream.iterate(0, (i -> i < a.length), (i -> ++i)).forEach(i -> {
+            columnLengths.putIfAbsent(i, 0);
+            if (columnLengths.get(i) < a[i].length()) {
+                columnLengths.put(i, a[i].length());
             }
+        }));
+        StringBuilder formatString = new StringBuilder();
+        String flag = lJust ? "-" : "";
+        columnLengths.entrySet().stream().forEach(e -> formatString.append("| %").append(flag).append(e.getValue()).append("s "));
+        formatString.append("|\n");
+
+        Stream.iterate(0, (i -> i < table.length), (i -> ++i))
+                .forEach(a -> System.out.printf(formatString.toString(), table[a]));
+        System.out.println();
     }
 }

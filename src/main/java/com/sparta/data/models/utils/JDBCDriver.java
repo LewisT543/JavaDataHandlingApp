@@ -42,14 +42,8 @@ public class JDBCDriver {
         put("sqlRead", "SELECT * FROM employees WHERE id=(?)");
     }};
     public static long initialiseDb(String dbConnection) {
-        String user = null;
-        String pass = null;
-        if (dbConnection.equals("jdbc:mysql://localhost:3306/employees?rewriteBatchedStatements=true")){
-            user = "root";
-            pass = "123xyz";
-        }
         long start = System.nanoTime();
-        try (Connection conn = DriverManager.getConnection(dbConnection, user, pass)) {
+        try (Connection conn = DriverManager.getConnection(dbConnection)) {
             Statement statement = conn.createStatement();
             statement.execute(SQL_QUERIES.get("sqlDropEmp"));
             statement.execute(SQL_QUERIES.get("sqlDropPref"));
@@ -68,16 +62,11 @@ public class JDBCDriver {
     }
 
     public static String[] insertAllBatchesOf1000(ArrayList<WriteableEmployee> employees, String dbConnection) {
-        String user = null;
-        String pass = null;
-        if (dbConnection.equals("jdbc:mysql://localhost:3306/employees?rewriteBatchedStatements=true")){
-            user = "root";
-            pass = "123xyz";// If security is a concern, use an environment variable or a properties file to store pass.
-        }
+        boolean mySqlFlag = dbConnection.equals("jdbc:mysql://root:123xyz@localhost:3306/employees?rewriteBatchedStatements=true");
         int totalRows = 0;
         PreparedStatement statement = null;
         long start = System.nanoTime();
-        try (Connection conn = DriverManager.getConnection(dbConnection, user, pass)) {
+        try (Connection conn = DriverManager.getConnection(dbConnection)) {
             conn.setAutoCommit(false);
             int count = 0;
             int BATCH_SIZE = 1000;
@@ -95,11 +84,19 @@ public class JDBCDriver {
                 statement.setInt(10, emp.getSalary());
                 statement.addBatch();
                 if (++count % BATCH_SIZE == 0) {
-                    totalRows += ((Arrays.stream(statement.executeBatch()).sum()) / 2) * -1;
+                    int resultRows = (Arrays.stream(statement.executeBatch()).sum());
+                    if (mySqlFlag)
+                        totalRows += ((resultRows / 2) * -1);
+                    else
+                        totalRows += resultRows;
                     conn.commit();
                 }
             }
-            totalRows += ((Arrays.stream(statement.executeBatch()).sum()) / 2) * -1;
+            int resultRows = (Arrays.stream(statement.executeBatch()).sum());
+            if (mySqlFlag)
+                totalRows += ((resultRows / 2) * -1);
+            else
+                totalRows += resultRows;
             conn.commit();
             close(statement);
         } catch (SQLException sqle) {
@@ -152,22 +149,26 @@ public class JDBCDriver {
         return results;
     }
 
-    public static ResultSet read(String dbConnection, int id) {
-        String user = null;
-        String pass = null;
-        ResultSet rs = null;
-        if (dbConnection.equals("jdbc:mysql://localhost:3306/employees?rewriteBatchedStatements=true")){
-            user = "root";
-            pass = "123xyz";
-        }
-        PreparedStatement statement = null;
-        try (Connection conn = DriverManager.getConnection(dbConnection, user, pass)) {
-            statement = conn.prepareStatement(SQL_QUERIES.get("sqlRead"));
+    public static ArrayList<String> read(String dbConnection, int id) {
+        ArrayList<String> resultList = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(dbConnection)) {
+            PreparedStatement statement = conn.prepareStatement(SQL_QUERIES.get("sqlRead"));
             statement.setInt(1, id);
-            rs = statement.executeQuery();
+            ResultSet rs = statement.executeQuery();
+            resultList.add(String.valueOf(rs.getInt("id")));
+            resultList.add(String.valueOf(rs.getInt("employee_number")));
+            resultList.add(String.valueOf(rs.getInt("prefix_id")));
+            resultList.add(rs.getString("f_name"));
+            resultList.add(rs.getString("mid_initial"));
+            resultList.add(rs.getString("l_name"));
+            resultList.add(String.valueOf(rs.getInt("gender_id")));
+            resultList.add(rs.getString("email"));
+            resultList.add(String.valueOf(rs.getDate("date_of_birth")));
+            resultList.add(String.valueOf(rs.getDate("date_of_joining")));
+            resultList.add(String.valueOf(rs.getInt("salary")));
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
-        return rs;
+        return resultList;
     }
 }
