@@ -16,22 +16,22 @@ The app is fairly simple, upon running the app the user will be greated with a s
 
 Firstly the user will be prompted to select a file to work with:
 
-[image](readmeExtras/select-a-file.png)
+![image](readmeExtras/select-a-file.png)
 
 
 If the user selects the smaller file, it will be processed and the results will be displayed on the console.
 
-[image](readmeExtras/small-file-results.png)
+![image](readmeExtras/small-file-results.png)
 
 
 If the user selects the larger file, they will presented with another menu prompting the user to make a choice of database to persist the data to.
 
-[image](readmeExtras/which-db.png)
+![image](readmeExtras/which-db.png)
 
 
 The database will then be innitialed and initialisation results will be displayed. The user will then be asked which programming route they would like to utilise. A choice between an object oriented implementation and a functional approach.
 
-[image](readmeExtras/oo-or-funct.png)
+![image](readmeExtras/oo-or-funct.png)
 
 
 Read results for the chosen method will then be displayed followed by one final prompt for the user. Which style of writing would they like to use, batch processing or multithreading. If the user chooses multithreading, they will be asked how many threads they would like to use.
